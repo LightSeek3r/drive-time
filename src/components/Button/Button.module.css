@@ -1,0 +1,37 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-md);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.primary {
+  background: var(--cobalt);
+  color: var(--on-cobalt);
+}
+
+.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.primary:disabled {
+  background: var(--hairline);
+  color: var(--muted);
+}
+
+.quiet {
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+}
+
+.quiet:hover:not(:disabled) {
+  border-color: var(--cobalt);
+  color: var(--cobalt);
+}

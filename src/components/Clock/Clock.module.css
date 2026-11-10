@@ -1,0 +1,7 @@
+.period {
+  margin-left: 2px;
+  font-size: 0.64em;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+}

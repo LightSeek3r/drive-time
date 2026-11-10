@@ -1,0 +1,207 @@
+.results {
+  padding-top: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding: 0 var(--space-4);
+  min-height: 20px;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.swatch {
+  display: block;
+  width: 14px;
+  height: 8px;
+  border: 1px solid var(--amber-casing);
+  background: var(--amber);
+}
+
+.swatchExtra {
+  border-color: var(--coral-casing);
+  background: var(--coral);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.table th,
+.table td {
+  padding: 0 var(--space-1);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table th {
+  font-weight: 400;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: var(--space-4);
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: var(--space-4);
+}
+
+.head {
+  height: 24px;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.head th {
+  font-weight: 500;
+  font-stretch: var(--stretch-label);
+  line-height: 1.2;
+  vertical-align: bottom;
+  padding-bottom: var(--space-1);
+}
+
+.barHead {
+  width: 100%;
+}
+
+.table .minutes,
+.table .arrive,
+.table .delta {
+  text-align: right;
+}
+
+.row {
+  height: var(--row-height);
+  border-top: 1px solid var(--hairline);
+}
+
+tbody .leave {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-stretch: var(--stretch-display);
+}
+
+.barCell {
+  width: 100%;
+  min-width: var(--bar-min-width);
+}
+
+tbody .minutes {
+  font-size: var(--text-base);
+  font-weight: 800;
+  font-stretch: var(--stretch-display);
+}
+
+.arrive,
+.delta {
+  color: var(--muted);
+}
+
+tbody .arrive,
+tbody .delta {
+  font-size: var(--text-sm);
+}
+
+.up {
+  color: var(--coral);
+  font-weight: 600;
+}
+
+.down {
+  color: var(--mint);
+  font-weight: 600;
+}
+
+.best {
+  background: var(--tint-best);
+}
+
+.dash {
+  color: var(--muted);
+}
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.error .barCell {
+  position: relative;
+}
+
+.skeleton {
+  display: block;
+  width: 60%;
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-low) 0%,
+    var(--skeleton-high) 50%,
+    var(--skeleton-low) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+.spent .leave {
+  color: var(--muted);
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.spent .barCell {
+  opacity: 0.45;
+}
+
+@media (min-width: 900px) {
+  .results {
+    padding-top: var(--space-4);
+  }
+
+  .row {
+    height: var(--row-height-wide);
+  }
+
+  .legend,
+  .table th:first-child,
+  .table td:first-child {
+    padding-left: var(--space-5);
+  }
+
+  .legend {
+    padding-right: var(--space-5);
+  }
+
+  .table th:last-child,
+  .table td:last-child {
+    padding-right: var(--space-5);
+  }
+}

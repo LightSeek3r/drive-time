@@ -1,0 +1,98 @@
+:root {
+  color-scheme: dark;
+
+  --ground: #0a0f1e;
+  --surface: #111933;
+  --hairline: #26325a;
+  --ink: #e8edfb;
+  --muted: #8b97b8;
+
+  --amber: #ffb547;
+  --amber-casing: #b8761a;
+  --coral: #ff6b57;
+  --coral-casing: #b2392c;
+  --mint: #4fe3b0;
+  --cobalt: #7c9bff;
+  --on-cobalt: #0a0f1e;
+  --on-accent: #0a0f1e;
+
+  --glow-amber: rgb(255 181 71 / 0.38);
+  --glow-coral: rgb(255 107 87 / 0.34);
+  --glow-mint: rgb(79 227 176 / 0.5);
+  --tint-best: rgb(124 155 255 / 0.1);
+  --tint-cobalt: rgb(124 155 255 / 0.14);
+  --scrim: rgb(5 8 18 / 0.72);
+  --skeleton-low: var(--hairline);
+  --skeleton-high: rgb(124 155 255 / 0.32);
+
+  --font-sans: 'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --stretch-display: 118%;
+  --stretch-label: 92%;
+  --stretch-body: 100%;
+
+  --text-2xs: 10px;
+  --text-tag: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-base: 15px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 22px;
+  --text-display: clamp(30px, 9.4vw, 40px);
+  --text-display-wide: clamp(40px, 3.6vw, 52px);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --touch: 44px;
+  --row-height: 38px;
+  --row-height-wide: 44px;
+  --bar-min-width: 80px;
+  --radius-pill: 999px;
+  --radius-field: 10px;
+  --radius-tag: 4px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --draw-duration: 600ms;
+  --draw-stagger: 35ms;
+
+  --inset-top: env(safe-area-inset-top, 0px);
+  --inset-right: env(safe-area-inset-right, 0px);
+  --inset-bottom: env(safe-area-inset-bottom, 0px);
+  --inset-left: env(safe-area-inset-left, 0px);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    --ground: #f4f6fb;
+    --surface: #ecf0f8;
+    --hairline: #c5cde3;
+    --ink: #131a33;
+    --muted: #4f5b7a;
+
+    --amber: #b36500;
+    --amber-casing: #6d3f00;
+    --coral: #b5301e;
+    --coral-casing: #6f1c11;
+    --mint: #066a4b;
+    --cobalt: #3552d9;
+    --on-cobalt: #ffffff;
+    --on-accent: #ffffff;
+
+    --glow-amber: rgb(179 101 0 / 0.22);
+    --glow-coral: rgb(181 48 30 / 0.2);
+    --glow-mint: rgb(6 106 75 / 0.3);
+    --tint-best: rgb(53 82 217 / 0.1);
+    --tint-cobalt: rgb(53 82 217 / 0.1);
+    --scrim: rgb(19 26 51 / 0.45);
+    --skeleton-low: var(--hairline);
+    --skeleton-high: rgb(53 82 217 / 0.2);
+  }
+}

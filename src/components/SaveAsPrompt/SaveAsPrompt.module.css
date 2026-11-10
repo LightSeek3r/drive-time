@@ -1,0 +1,15 @@
+.prompt {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-4);
+}
+
+.save {
+  min-height: var(--touch);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--cobalt);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}

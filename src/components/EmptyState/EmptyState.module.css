@@ -1,0 +1,24 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.text {
+  max-width: 28ch;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  font-stretch: var(--stretch-display);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+@media (min-width: 900px) {
+  .empty {
+    padding: var(--space-6) var(--space-5);
+    border-bottom: 0;
+  }
+}

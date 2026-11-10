@@ -1,0 +1,55 @@
+{
+  "summary": {
+    "query": "part dieu",
+    "queryType": "NON_NEAR",
+    "queryTime": 41,
+    "numResults": 3,
+    "offset": 0,
+    "totalResults": 3,
+    "fuzzyLevel": 1,
+    "geoBias": { "lat": 45.76, "lon": 4.83 }
+  },
+  "results": [
+    {
+      "type": "POI",
+      "id": "g6JpZK8yNTAwMDkwMDAzNzM1NjahY6NGUkGhdqdVbmlmaWVk",
+      "score": 9.71,
+      "dist": 1530.2,
+      "poi": { "name": "Gare de Lyon Part-Dieu", "categories": ["railroad station"] },
+      "address": {
+        "streetName": "Place Charles Béraudier",
+        "municipality": "Lyon",
+        "postalCode": "69003",
+        "countryCode": "FR",
+        "freeformAddress": "Place Charles Béraudier, 69003 Lyon"
+      },
+      "position": { "lat": 45.76058, "lon": 4.85954 }
+    },
+    {
+      "type": "Point Address",
+      "id": "ZZ1aAAvMDGwzNTE4ODU2NjE",
+      "score": 8.2,
+      "address": {
+        "streetNumber": "17",
+        "streetName": "Rue du Docteur Bouchut",
+        "municipality": "Lyon",
+        "postalCode": "69003",
+        "countryCode": "FR",
+        "freeformAddress": "17 Rue du Docteur Bouchut, 69003 Lyon"
+      },
+      "position": { "lat": 45.76084, "lon": 4.85468 }
+    },
+    {
+      "type": "Geography",
+      "id": "XY1bBBwNDA5ODQ5",
+      "score": 7.4,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Villeurbanne",
+        "countryCode": "FR",
+        "freeformAddress": "Villeurbanne"
+      },
+      "position": { "lat": 45.76601, "lon": 4.8795 }
+    }
+  ]
+}

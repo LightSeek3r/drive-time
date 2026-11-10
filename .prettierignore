@@ -1,0 +1,6 @@
+dist
+node_modules
+.impeccable
+.claude
+src/**/*.d.ts
+src/**/*.js

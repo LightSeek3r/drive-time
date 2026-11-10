@@ -1,0 +1,69 @@
+.route {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--space-2) var(--space-4) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--touch);
+  align-items: center;
+  gap: 0 var(--space-2);
+}
+
+.stack {
+  grid-column: 1;
+}
+
+.swap {
+  grid-column: 2;
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  color: var(--cobalt);
+}
+
+.swap:hover {
+  border-color: var(--cobalt);
+}
+
+.locate {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  border-radius: var(--radius-pill);
+  color: var(--cobalt);
+}
+
+.locate:disabled {
+  color: var(--muted);
+}
+
+.spin {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}
+
+.geoMessage {
+  padding-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}

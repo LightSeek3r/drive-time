@@ -1,0 +1,110 @@
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 10px var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--surface);
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.tag {
+  flex: none;
+  margin-top: 2px;
+  padding: 1px 6px;
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-tag);
+  font-size: var(--text-tag);
+  font-weight: 700;
+  font-stretch: var(--stretch-label);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.headline {
+  font-size: var(--text-display);
+  font-weight: 800;
+  font-stretch: var(--stretch-display);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.time {
+  color: var(--mint);
+}
+
+.line {
+  font-size: var(--text-base);
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.figure {
+  font-weight: 700;
+}
+
+.bone {
+  display: block;
+  border-radius: var(--radius-tag);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-low) 0%,
+    var(--skeleton-high) 50%,
+    var(--skeleton-low) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.boneHeadline {
+  width: 62%;
+  height: 34px;
+}
+
+.boneLine {
+  width: 88%;
+  height: 14px;
+}
+
+.boneLineShort {
+  width: 54%;
+  height: 14px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bone {
+    animation: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .panel {
+    padding: var(--space-5);
+    gap: var(--space-2);
+  }
+
+  .headline {
+    font-size: var(--text-display-wide);
+    line-height: 1;
+    text-wrap: wrap;
+  }
+}

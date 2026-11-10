@@ -1,0 +1,41 @@
+{
+  "formatVersion": "0.0.12",
+  "routes": [
+    {
+      "summary": {
+        "lengthInMeters": 12840,
+        "travelTimeInSeconds": 1563,
+        "trafficDelayInSeconds": 212,
+        "trafficLengthInMeters": 2100,
+        "departureTime": "2026-11-10T08:15:00+01:00",
+        "arrivalTime": "2026-11-10T08:41:03+01:00",
+        "noTrafficTravelTimeInSeconds": 1180,
+        "historicTrafficTravelTimeInSeconds": 1540,
+        "liveTrafficIncidentsTravelTimeInSeconds": 1563
+      },
+      "legs": [
+        {
+          "summary": {
+            "lengthInMeters": 12840,
+            "travelTimeInSeconds": 1563,
+            "trafficDelayInSeconds": 212,
+            "departureTime": "2026-11-10T08:15:00+01:00",
+            "arrivalTime": "2026-11-10T08:41:03+01:00"
+          },
+          "points": [
+            { "latitude": 45.76, "longitude": 4.83 },
+            { "latitude": 45.75, "longitude": 4.85 }
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "startPointIndex": 0,
+          "endPointIndex": 1,
+          "sectionType": "TRAVEL_MODE",
+          "travelMode": "car"
+        }
+      ]
+    }
+  ]
+}
