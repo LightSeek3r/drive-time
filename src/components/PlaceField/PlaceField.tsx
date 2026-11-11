@@ -15,6 +15,8 @@ export interface PlaceShortcut {
   /** An unset place: drawn as an invitation, not a destination. */
   setup?: boolean;
   onChoose: () => void;
+  /** A saved place can be replaced from the same list: a button on its row, and ArrowRight from the keyboard. */
+  edit?: { label: string; run: () => void };
 }
 
 interface PlaceFieldProps {
@@ -48,6 +50,7 @@ interface Option {
   icon: IconName | null;
   setup: boolean;
   choose: () => void;
+  edit: { label: string; run: () => void } | null;
 }
 
 function addressOf(place: Place): string {
@@ -118,6 +121,15 @@ export function PlaceField({
           reset();
           shortcut.onChoose();
         },
+        edit: shortcut.edit
+          ? {
+              label: shortcut.edit.label,
+              run: () => {
+                reset();
+                shortcut.edit?.run();
+              },
+            }
+          : null,
       }))
     : suggestions.map((place) => ({
         id: place.id,
@@ -129,6 +141,7 @@ export function PlaceField({
           reset();
           onSelect(place);
         },
+        edit: null,
       }));
   const hasOptions = options.length > 0;
 
@@ -153,6 +166,15 @@ export function PlaceField({
         if (open && chosen !== undefined) {
           event.preventDefault();
           chosen.choose();
+        }
+        break;
+      }
+      case 'ArrowRight': {
+        // Only on a highlighted shortcut that has one; elsewhere the arrow keeps moving the caret.
+        const edit = open ? options[activeIndex]?.edit : null;
+        if (edit) {
+          event.preventDefault();
+          edit.run();
         }
         break;
       }
@@ -262,6 +284,21 @@ export function PlaceField({
                   <span className={styles.optionAddress}>{option.address}</span>
                 )}
               </span>
+              {option.edit && (
+                <button
+                  type="button"
+                  className={styles.optionEdit}
+                  tabIndex={-1}
+                  aria-label={option.edit.label}
+                  onClick={(event) => {
+                    // The row's own click would choose the place instead of editing it.
+                    event.stopPropagation();
+                    option.edit?.run();
+                  }}
+                >
+                  <Icon name="edit" size={16} />
+                </button>
+              )}
             </li>
           ))}
         </ul>

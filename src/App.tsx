@@ -12,7 +12,7 @@ import { SettingsSheet } from './components/SettingsSheet/SettingsSheet';
 import { StatusFooter } from './components/StatusFooter/StatusFooter';
 import { WhenSection } from './components/WhenSection/WhenSection';
 import { buildSlots, resolveBase } from './domain/departures';
-import { currentLocationPlace } from './domain/places';
+import { currentLocationPlace, samePlace } from './domain/places';
 import type { Place, SavedPlaceKey, SlotState, StartTime } from './domain/types';
 import { useDepartureEstimates } from './hooks/useDepartureEstimates';
 import { useGeolocation, type GeoState } from './hooks/useGeolocation';
@@ -147,11 +147,20 @@ export default function App() {
       />
       <SetPlaceDialog
         target={setUpKey}
+        current={setUpKey === null ? undefined : places[setUpKey]}
         lang={lang}
         near={activePlace?.position}
         onSave={(key, place) => {
+          const previous = places[key];
           savePlace(key, place);
           if (activePlace === null) pick(activeField, place);
+          else if (previous !== undefined) {
+            // A field still showing the replaced place would keep an address that is no longer Home or Work.
+            const retarget = (p: Place | null) =>
+              p !== null && samePlace(p, previous) ? place : p;
+            const next = { from: retarget(trip.from), to: retarget(trip.to) };
+            if (next.from !== trip.from || next.to !== trip.to) setTrip(next);
+          }
           setSetUpKey(null);
         }}
         onClose={() => setSetUpKey(null)}

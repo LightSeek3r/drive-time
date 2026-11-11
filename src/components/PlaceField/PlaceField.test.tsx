@@ -110,3 +110,59 @@ describe('PlaceField combobox', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Key missing');
   });
 });
+
+describe('PlaceField saved-place shortcuts', () => {
+  function renderWithShortcut() {
+    const onChoose = vi.fn();
+    const run = vi.fn();
+    render(
+      <I18nProvider lang="en">
+        <PlaceField
+          label="To"
+          value={null}
+          suggestions={[]}
+          status="idle"
+          onQueryChange={vi.fn()}
+          onSelect={vi.fn()}
+          shortcuts={[
+            {
+              id: 'saved-home',
+              label: 'Home',
+              address: '14 Rue des Lilas, Lyon',
+              icon: 'home',
+              onChoose,
+              edit: { label: 'Change Home', run },
+            },
+            { id: 'set-work', label: 'Set Work', icon: 'plus', setup: true, onChoose: vi.fn() },
+          ]}
+        />
+      </I18nProvider>,
+    );
+    return { onChoose, run };
+  }
+
+  it('edits a saved place from its own button without choosing it', async () => {
+    const { onChoose, run } = renderWithShortcut();
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change Home' }));
+    expect(run).toHaveBeenCalledOnce();
+    expect(onChoose).not.toHaveBeenCalled();
+    expect(screen.getByRole('combobox', { name: 'To' })).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('offers no edit button on a place that is not saved yet', async () => {
+    renderWithShortcut();
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    expect(screen.getAllByRole('button')).toHaveLength(1);
+  });
+
+  it('edits the highlighted saved place with ArrowRight', async () => {
+    const { onChoose, run } = renderWithShortcut();
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.keyboard('{ArrowRight}');
+    expect(run).not.toHaveBeenCalled();
+    await userEvent.keyboard('{ArrowDown}{ArrowRight}');
+    expect(run).toHaveBeenCalledOnce();
+    expect(onChoose).not.toHaveBeenCalled();
+  });
+});

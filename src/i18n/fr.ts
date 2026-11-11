@@ -74,5 +74,6 @@ export const fr: Messages = {
   error_action_retry: 'Réessayer',
   save_as: 'Enregistrer comme {name}',
   set_place: 'Définir {name}',
+  edit_place: 'Modifier {name}',
   set_place_hint: 'Recherchez une adresse à enregistrer',
 };

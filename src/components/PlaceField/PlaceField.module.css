@@ -183,6 +183,22 @@
   color: var(--muted);
 }
 
+.optionEdit {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border-radius: var(--radius-pill);
+  color: var(--muted);
+}
+
+.optionEdit:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
 .optionText {
   display: flex;
   flex-direction: column;

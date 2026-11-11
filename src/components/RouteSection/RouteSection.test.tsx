@@ -83,6 +83,14 @@ describe('RouteSection', () => {
     expect(onActivate).toHaveBeenCalledWith('from');
   });
 
+  it('edits a saved place without picking it', async () => {
+    const { onSetUp, onPick } = setup();
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change Home' }));
+    expect(onSetUp).toHaveBeenCalledWith('home');
+    expect(onPick).not.toHaveBeenCalled();
+  });
+
   it('opens set-up from an unsaved shortcut', async () => {
     const { onSetUp } = setup({ saved: { home } });
     await userEvent.click(screen.getByRole('combobox', { name: 'To' }));

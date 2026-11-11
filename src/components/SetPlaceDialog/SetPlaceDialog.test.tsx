@@ -19,12 +19,18 @@ vi.mock('../../hooks/usePlaceSearch', () => ({
       : { suggestions: [], status: 'idle', error: null },
 }));
 
-function setup(target: 'home' | 'work' | null = 'work') {
+function setup(target: 'home' | 'work' | null = 'work', current?: typeof place) {
   const onSave = vi.fn();
   const onClose = vi.fn();
   render(
     <I18nProvider lang="en">
-      <SetPlaceDialog target={target} lang="en" onSave={onSave} onClose={onClose} />
+      <SetPlaceDialog
+        target={target}
+        current={current}
+        lang="en"
+        onSave={onSave}
+        onClose={onClose}
+      />
     </I18nProvider>,
   );
   return { onSave, onClose };
@@ -46,6 +52,11 @@ describe('SetPlaceDialog', () => {
     expect(save).toBeEnabled();
     await userEvent.click(save);
     expect(onSave).toHaveBeenCalledWith('work', place);
+  });
+
+  it('is titled as a change when the place is already saved', () => {
+    setup('home', place);
+    expect(screen.getByRole('dialog', { name: 'Change Home' })).toBeInTheDocument();
   });
 
   it('closes without saving', async () => {

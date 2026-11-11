@@ -68,5 +68,6 @@ export const en = {
   error_action_retry: 'Try again',
   save_as: 'Save as {name}',
   set_place: 'Set {name}',
+  edit_place: 'Change {name}',
   set_place_hint: 'Search for an address to save',
 } as const;

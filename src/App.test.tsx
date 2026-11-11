@@ -181,6 +181,28 @@ describe('App', () => {
     expect(refresh).toHaveBeenCalledOnce();
   });
 
+  it('replaces a saved Home from the shortcut list and updates a field still showing it', async () => {
+    const newHome: Place = {
+      id: 'new-home',
+      label: 'Nouvelle maison',
+      address: '3 Quai Claude Bernard, Lyon',
+      position: { lat: 45.74, lon: 4.86 },
+    };
+    mocks.search.mockReturnValue({ suggestions: [newHome], status: 'ready', error: null });
+    placesStore.set({ home, work });
+    lastTripStore.set({ from: home, to: work });
+    renderApp();
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change Home' }));
+    const dialog = screen.getByRole('dialog', { name: 'Change Home' });
+    await userEvent.type(within(dialog).getByRole('combobox'), 'quai');
+    await userEvent.click(within(dialog).getByRole('option', { name: /Nouvelle maison/ }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+    expect(placesStore.get().home).toEqual(newHome);
+    expect(lastTripStore.get()).toEqual({ from: newHome, to: work });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('opens a search dialog for an unsaved Home shortcut and saves the chosen place', async () => {
     mocks.search.mockReturnValue({ suggestions: [home], status: 'ready', error: null });
     renderApp();

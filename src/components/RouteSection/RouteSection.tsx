@@ -95,6 +95,7 @@ export function RouteSection({
         address: place.address === '' ? place.label : place.address,
         icon: key,
         onChoose: () => onPick(field, place),
+        edit: { label: t('edit_place', { name: t(key) }), run: () => onSetUp(key) },
       };
     });
 
