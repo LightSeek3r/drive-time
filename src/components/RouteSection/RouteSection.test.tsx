@@ -57,21 +57,36 @@ function setup(props: Partial<ComponentProps<typeof RouteSection>> = {}) {
 }
 
 describe('RouteSection', () => {
-  it('fills the active field from a saved chip', async () => {
-    const { onPick } = setup({ activeField: 'to' });
-    await userEvent.click(screen.getByRole('button', { name: 'Home' }));
-    expect(onPick).toHaveBeenCalledWith('to', home);
+  it('offers Home and Work in the focused field, and fills only that field', async () => {
+    const { onPick } = setup();
+    await userEvent.click(screen.getByRole('combobox', { name: 'From' }));
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      'Home14 Rue des Lilas, Lyon',
+      'WorkPart-Dieu, Lyon',
+    ]);
+    await userEvent.click(screen.getByRole('option', { name: /^Work/ }));
+    expect(onPick).toHaveBeenCalledOnce();
+    expect(onPick).toHaveBeenCalledWith('from', work);
   });
 
-  it('tracks the last focused field as the chip target', async () => {
+  it('keeps nothing highlighted once a shortcut is used', async () => {
+    setup();
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.click(screen.getByRole('option', { name: /^Home/ }));
+    expect(screen.getByRole('combobox', { name: 'To' })).toHaveAttribute('aria-expanded', 'false');
+    expect(document.querySelector('[aria-pressed]')).toBeNull();
+  });
+
+  it('tracks the last focused field for saving a one-off place', async () => {
     const { onActivate } = setup();
     await userEvent.click(screen.getByRole('combobox', { name: 'From' }));
     expect(onActivate).toHaveBeenCalledWith('from');
   });
 
-  it('opens set-up for an unsaved chip', async () => {
+  it('opens set-up from an unsaved shortcut', async () => {
     const { onSetUp } = setup({ saved: { home } });
-    await userEvent.click(screen.getByRole('button', { name: 'Set Work' }));
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.click(screen.getByRole('option', { name: /^Set Work/ }));
     expect(onSetUp).toHaveBeenCalledWith('work');
   });
 

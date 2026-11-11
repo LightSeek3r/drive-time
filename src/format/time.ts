@@ -48,20 +48,31 @@ export function formatDay(date: Date, now: Date, labels: DayLabels): string {
   return dateFormat.format(date);
 }
 
-function pad(value: number): string {
-  return String(value).padStart(2, '0');
+const hourFormat = new Intl.DateTimeFormat(undefined, { hour: 'numeric' });
+const weekdayFormat = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
+
+/** The hour as the device locale writes it ("8 AM", "08"), for a picker column. */
+export function formatHour(hour: number): string {
+  return hourFormat.format(new Date(2000, 0, 1, hour));
 }
 
-/** The `YYYY-MM-DDTHH:mm` shape a datetime-local input reads and writes, in device time. */
-export function toLocalInputValue(date: Date): string {
-  const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-  return `${day}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+export function formatWeekday(date: Date): string {
+  return weekdayFormat.format(date);
 }
 
-export function fromLocalInputValue(value: string): Date | null {
-  if (value === '') return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
+export function addDays(date: Date, days: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+}
+
+/** Whole calendar days from `from` to `date`, ignoring the time of day. */
+export function dayOffset(date: Date, from: Date): number {
+  return Math.round((startOfDay(date) - startOfDay(from)) / DAY_MS);
+}
+
+/** `date` rounded up to the next `stepMin` boundary, seconds dropped. */
+export function ceilToStep(date: Date, stepMin: number): Date {
+  const step = stepMin * 60_000;
+  return new Date(Math.ceil(date.getTime() / step) * step);
 }
 
 export function nextQuarterHour(now: Date): Date {

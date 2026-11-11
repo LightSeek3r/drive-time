@@ -7,7 +7,16 @@ import { PlaceField } from '../PlaceField/PlaceField';
 
 type PassThrough = Pick<
   ComponentProps<typeof PlaceField>,
-  'label' | 'value' | 'tag' | 'onSelect' | 'onFocus' | 'trailing' | 'shape' | 'placeholder'
+  | 'label'
+  | 'value'
+  | 'tag'
+  | 'onSelect'
+  | 'onFocus'
+  | 'trailing'
+  | 'shape'
+  | 'marker'
+  | 'shortcuts'
+  | 'placeholder'
 >;
 
 interface PlaceSearchFieldProps extends PassThrough {

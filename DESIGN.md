@@ -1,105 +1,86 @@
 ---
 name: Home Timer
-description: A night-first departure comparison where every trip is a cased road bar lit from within, amber for the fastest trip and coral for the minutes traffic adds.
+description: A night-first departure comparison in neutral tarmac grey, where pale grey bars show the trip, red shows the minutes traffic adds, and one acid lime marks everything you can act on.
 colors:
-  ground: '#0a0f1e'
-  surface: '#111933'
-  hairline: '#26325a'
-  ink: '#e8edfb'
-  muted: '#8b97b8'
-  amber: '#ffb547'
-  amber-casing: '#b8761a'
-  coral: '#ff6b57'
-  coral-casing: '#b2392c'
-  mint: '#4fe3b0'
-  cobalt: '#7c9bff'
-  on-cobalt: '#0a0f1e'
-  on-accent: '#0a0f1e'
-  ground-day: '#f4f6fb'
-  surface-day: '#ecf0f8'
-  hairline-day: '#c5cde3'
-  ink-day: '#131a33'
-  muted-day: '#4f5b7a'
-  amber-day: '#b36500'
-  amber-casing-day: '#6d3f00'
-  coral-day: '#b5301e'
-  coral-casing-day: '#6f1c11'
-  mint-day: '#066a4b'
-  cobalt-day: '#3552d9'
-  on-cobalt-day: '#ffffff'
-  on-accent-day: '#ffffff'
+  ground: '#101010'
+  surface: '#181818'
+  raised: '#212121'
+  hairline: '#2e2e2e'
+  ink: '#f0f0f0'
+  muted: '#9a9a9a'
+  action: '#c6f432'
+  on-action: '#101010'
+  cost: '#ff3b30'
+  on-cost: '#101010'
+  road: '#cfcfcf'
+  ground-day: '#f5f5f3'
+  surface-day: '#ebebe8'
+  raised-day: '#e0e0dc'
+  hairline-day: '#d0d0cb'
+  ink-day: '#111111'
+  muted-day: '#666666'
+  action-day: '#111111'
+  on-action-day: '#ffffff'
+  cost-day: '#d92c20'
+  on-cost-day: '#ffffff'
+  road-day: '#3a3a3a'
 typography:
   display:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
-    fontSize: 'clamp(30px, 9.4vw, 40px)'
-    fontWeight: 800
-    lineHeight: 1.02
-    letterSpacing: '-0.02em'
-    fontVariation: "'wdth' 118"
-  display-wide:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
-    fontSize: 'clamp(40px, 3.6vw, 52px)'
-    fontWeight: 800
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: 'clamp(40px, 12.5vw, 52px)'
+    fontWeight: 400
     lineHeight: 1
-    letterSpacing: '-0.02em'
-    fontVariation: "'wdth' 118"
+    letterSpacing: '-0.01em'
+  display-wide:
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: 'clamp(52px, 4.6vw, 68px)'
+    fontWeight: 400
+    lineHeight: 1
   title:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
-    fontSize: '22px'
-    fontWeight: 700
-    lineHeight: 1.35
-    letterSpacing: '-0.01em'
-    fontVariation: "'wdth' 118"
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: '28px'
+    fontWeight: 400
   brand:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
-    fontSize: '20px'
-    fontWeight: 700
-    lineHeight: 1.35
-    letterSpacing: '-0.01em'
-    fontVariation: "'wdth' 118"
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: '24px'
+    fontWeight: 400
   figure-leave:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif"
     fontSize: '16px'
-    fontWeight: 700
-    lineHeight: 1.35
-    fontVariation: "'wdth' 118"
-    fontFeature: "'tnum', 'lnum'"
+    fontWeight: 650
+    fontFeature: "'lnum'"
   figure-minutes:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif"
     fontSize: '15px'
-    fontWeight: 800
-    lineHeight: 1.35
-    fontVariation: "'wdth' 118"
+    fontWeight: 750
     fontFeature: "'tnum', 'lnum'"
   body:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif"
     fontSize: '15px'
     fontWeight: 400
     lineHeight: 1.35
-    fontVariation: "'wdth' 100"
-    fontFeature: "'tnum', 'lnum'"
+    fontFeature: "'lnum'"
   body-sm:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif"
     fontSize: '13px'
     fontWeight: 400
     lineHeight: 1.35
   label:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif"
     fontSize: '12px'
     fontWeight: 500
     lineHeight: 1.2
-    fontVariation: "'wdth' 92"
   tag:
-    fontFamily: "'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "'Schibsted Grotesk Variable', 'Schibsted Grotesk', system-ui, sans-serif"
     fontSize: '10px'
     fontWeight: 800
     lineHeight: 1.3
     letterSpacing: '0.06em'
-    fontVariation: "'wdth' 92"
 rounded:
+  bar: '3px'
   tag: '4px'
-  field: '10px'
-  sheet: '16px'
+  field: '14px'
+  sheet: '20px'
   pill: '999px'
 spacing:
   space-1: '4px'
@@ -113,86 +94,87 @@ spacing:
   row-height-wide: '44px'
 components:
   button-primary:
-    backgroundColor: '{colors.cobalt}'
-    textColor: '{colors.on-cobalt}'
+    backgroundColor: '{colors.action}'
+    textColor: '{colors.on-action}'
     rounded: '{rounded.pill}'
     height: '{spacing.touch}'
-    padding: '0 16px'
+    padding: '0 24px'
   button-primary-disabled:
-    backgroundColor: '{colors.hairline}'
+    backgroundColor: '{colors.raised}'
     textColor: '{colors.muted}'
     rounded: '{rounded.pill}'
   button-quiet:
-    backgroundColor: '{colors.ground}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.pill}'
+    height: '{spacing.touch}'
+    padding: '0 24px'
+  segment-active:
+    backgroundColor: '{colors.action}'
+    textColor: '{colors.on-action}'
+    rounded: '{rounded.pill}'
+    padding: '0 16px'
+  segment-idle:
+    textColor: '{colors.muted}'
+    rounded: '{rounded.pill}'
+    padding: '0 16px'
+  time-button:
+    backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
     rounded: '{rounded.pill}'
     height: '{spacing.touch}'
     padding: '0 16px'
-  segment-active:
-    backgroundColor: '{colors.cobalt}'
-    textColor: '{colors.on-cobalt}'
-    rounded: '{rounded.pill}'
-    padding: '0 12px'
-  segment-idle:
-    textColor: '{colors.muted}'
-    rounded: '{rounded.pill}'
-    padding: '0 12px'
-  time-pill:
-    textColor: '{colors.muted}'
-    rounded: '{rounded.pill}'
-    height: '{spacing.touch}'
-    padding: '0 0 0 12px'
   place-field:
-    backgroundColor: '{colors.ground}'
-    textColor: '{colors.ink}'
-    rounded: '{rounded.field}'
-    height: '{spacing.touch}'
-    padding: '0 4px 0 12px'
-  chip:
-    textColor: '{colors.ink}'
-    rounded: '{rounded.pill}'
-    height: '36px'
-    padding: '0 14px'
-  chip-pressed:
-    backgroundColor: '#7c9bff24'
-    textColor: '{colors.cobalt}'
-    rounded: '{rounded.pill}'
-  answer-panel:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    padding: '10px 16px'
-  answer-time:
-    textColor: '{colors.mint}'
-    typography: '{typography.display}'
+    rounded: '{rounded.field}'
+    height: '52px'
+    padding: '0 4px 0 16px'
+  place-option:
+    textColor: '{colors.ink}'
+    rounded: '10px'
+    height: '{spacing.touch}'
+    padding: '8px 12px'
+  day-chip:
+    backgroundColor: '{colors.raised}'
+    textColor: '{colors.muted}'
+    rounded: '{rounded.field}'
+    padding: '8px 12px'
+  day-chip-selected:
+    backgroundColor: '{colors.action}'
+    textColor: '{colors.on-action}'
+    rounded: '{rounded.field}'
+  time-entry-selected:
+    backgroundColor: '{colors.action}'
+    textColor: '{colors.on-action}'
+    height: '{spacing.touch}'
   tag-sample:
     textColor: '{colors.muted}'
     rounded: '{rounded.tag}'
     padding: '1px 6px'
   tag-best:
-    backgroundColor: '{colors.mint}'
-    textColor: '{colors.on-accent}'
+    backgroundColor: '{colors.action}'
+    textColor: '{colors.on-action}'
     rounded: '{rounded.tag}'
     typography: '{typography.tag}'
     padding: '1px 5px'
   tag-peak:
-    backgroundColor: '{colors.coral}'
-    textColor: '{colors.on-accent}'
+    backgroundColor: '{colors.cost}'
+    textColor: '{colors.on-cost}'
     rounded: '{rounded.tag}'
     typography: '{typography.tag}'
     padding: '1px 5px'
   results-row:
     height: '{spacing.row-height}'
     textColor: '{colors.ink}'
-  results-row-wide:
-    height: '{spacing.row-height-wide}'
   road-trip:
-    backgroundColor: '{colors.amber}'
-    height: '12px'
+    backgroundColor: '{colors.road}'
+    height: '10px'
   road-over:
-    backgroundColor: '{colors.coral}'
-    textColor: '{colors.on-accent}'
-    height: '12px'
+    backgroundColor: '{colors.cost}'
+    textColor: '{colors.on-cost}'
+    height: '10px'
   banner:
+    backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
     height: '48px'
     padding: '4px 16px'
@@ -200,210 +182,189 @@ components:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
     rounded: '{rounded.sheet}'
-  sheet-wide:
-    width: '440px'
-  key-row:
-    backgroundColor: '{colors.ground}'
-    rounded: '{rounded.field}'
-    height: '48px'
 ---
 
 # Design System: Home Timer
 
 ## Overview
 
-**Creative North Star: "The Lit Road Map"**
+**Creative North Star: "Tarmac"**
 
-Home Timer is read at the door, in the car, or at a dim desk before dawn, so it is built night-first: a deep ink-navy ground (#0a0f1e) in which light is the only material. Every departure is a road drawn to scale and lit from within. Amber is the trip at its fastest; coral is the minutes traffic adds on top; mint marks the one slot worth taking. Nothing else glows. The screen divides into regions with 1px hairlines, never with cards or shadows, so the nine road bars read as the content and everything around them stays quiet.
+Home Timer is read at the door, in the car, or at a dim desk before dawn, so it is night-first: a true neutral near-black ground (#101010) with no warm or blue cast, like a road at night. Colour is rationed to two signals that carry meaning and nothing else competes with them: **acid lime** is everything you can act on or should take (focus, the active choice, the primary action, the best slot), and **traffic red** is the minutes traffic adds. The trip itself is a pale grey bar, so a driver reads the length first and the cost second.
 
-The type carries the same voice. Archivo Variable is used at two widths: expanded (118) for the answer, the brand and every figure a driver compares, and normal (100) for sentences. All numbers sit on tabular lining figures so leave, minutes, arrive and delta stack into columns. Density is deliberate: the first viewport at 390 by 844 holds the controls, the answer and all nine rows without scrolling. Copy is plain and admits uncertainty ("Estimated from typical traffic", a SAMPLE DATA tag until a real key is set).
+The type has a human voice. Instrument Serif sets only the wordmark, the sheet titles and the answer ("Leave 7:04 PM", the time in lime); everything else, including every figure a driver compares, is Schibsted Grotesk. There is no width axis and no mixed display faces. Copy is plain and admits uncertainty ("Estimated from typical traffic", a SAMPLE DATA tag until real places are set).
 
-The system rejects the blue-pin maps-app look, the saturated-yellow retro-map look, and the glow-everything neon dashboard. A daylight theme follows `prefers-color-scheme` and inverts the same tokens rather than introducing new ones.
+The screen divides by tone, not by outlines: one `surface` step for fields, the time controls and notices, one `raised` step for hover, focus and popovers, and 1px hairlines only between result rows. The system rejects the blue-pin maps look, the neon-glow dashboard (no glow anywhere), and warm cream-and-orange app palettes. A daylight theme follows `prefers-color-scheme`: paper white and near-black, where the action colour becomes black because lime cannot carry text on light.
 
 **Key Characteristics:**
 
-- Night ink-navy ground, one tonal surface, 1px hairline dividers, no shadows, no cards.
-- Cased road bars: a 1px darker casing around amber trip and coral overage, with a bounded soft glow.
-- Cobalt is reserved ink: focus ring, active segment, primary action, and the small links that act.
-- Expanded Archivo for answer and figures, normal width for body, tabular lining figures everywhere.
-- Colour never carries meaning alone: BEST and PEAK are words, the SAMPLE DATA state is a word.
-- Pill geometry for controls (fully rounded), 10px for the stacked route fields, 4px for tags.
+- Neutral near-black ground, two tonal steps above it (`surface`, `raised`), hairlines only between rows.
+- Colour means something: lime = act or best, red = traffic cost, grey = the trip. Nothing decorative.
+- Flat 10px road bars on one shared scale, 3px radius, no casing and no glow.
+- Serif for voice (wordmark, answer, sheet titles), grotesque for everything read or compared.
+- Saved places live inside the From/To dropdown; nothing stays "selected" after you use it.
+- Colour never carries meaning alone: BEST and PEAK are words, SAMPLE DATA is a word.
 
 ## Colors
 
-A cold, ink-navy field lit by three warm-to-cool signal hues, with one electric accent held back for interaction. The same roles exist in a daylight set; the dark set is canonical in the frontmatter, the `-day` keys are the light-theme values.
-
 ### Primary
 
-- **Electric Cobalt** (`colors.cobalt`, #7c9bff): reserved ink. Focus ring (2px, 2px offset), the active segment fill, the primary button fill, the pressed chip outline and text, the swap and locate icons, text-links such as Refresh and Change, the caret, and text selection. Never a data colour, never a decoration.
+- **Acid Lime** (`colors.action`, #c6f432): focus ring, the active segment, the primary button, the selected day and time in the picker, text links (Refresh, Save as), the locate icon, BEST (tag, underline, faster delta) and the departure time in the answer. Text on lime is `on-action` (#101010).
 
 ### Secondary
 
-- **Trip Amber** (`colors.amber`, #ffb547): the trip at its fastest, drawn as the lit fill of every road bar and the first legend swatch. Casing `colors.amber-casing` (#b8761a). Also the warning banner icon.
-- **Traffic Coral** (`colors.coral`, #ff6b57): minutes traffic adds (the bar overhang), positive deltas ("+9"), the PEAK tag fill, and the error banner icon. Casing `colors.coral-casing` (#b2392c).
-- **Best Mint** (`colors.mint`, #4fe3b0): the best slot only: the departure time in the answer headline, the BEST tag fill, the lit underline under the best bar, and negative deltas ("-6").
+- **Traffic Red** (`colors.cost`, #ff3b30): minutes traffic adds only: the bar overhang, positive deltas, the PEAK tag, and the error banner icon. Text on red is `on-cost` (#101010).
+- **Road Grey** (`colors.road`, #cfcfcf): the trip at its fastest, drawn as the base of every road bar and the first legend swatch, and the road mark in the brand band.
 
 ### Neutral
 
-- **Night Ground** (`colors.ground`, #0a0f1e): page background, route field fill, settings key row fill, and the foreground on cobalt and accent fills.
-- **Panel Ink-Blue** (`colors.surface`, #111933): the answer panel, the place-field popover, and the settings and dialog sheets. The only raised tone in the system.
-- **Hairline** (`colors.hairline`, #26325a): every divider and every control outline at rest; also disabled primary fill and the skeleton base.
-- **Cold White Ink** (`colors.ink`, #e8edfb): body and figure text.
-- **Dusk Muted** (`colors.muted`, #8b97b8): labels, placeholders, secondary figures (arrive, delta dash), footer note, idle segment text, icons at rest.
+- **Tarmac Ground** (`colors.ground`, #101010): page background.
+- **Surface** (`colors.surface`, #181818): the From/To block, the When controls, notice banners, sheets.
+- **Raised** (`colors.raised`, #212121): hover and focus fill for fields, popovers, day chips and the time columns in the picker, disabled primary fill.
+- **Hairline** (`colors.hairline`, #2e2e2e): row dividers, the divider between From and To, quiet button borders, scrollbars.
+- **Ink** (`colors.ink`, #f0f0f0): body and figure text.
+- **Muted** (`colors.muted`, #9a9a9a): labels, placeholders, secondary figures, idle segments, rest-state icons.
 
-Derived values live in `src/styles/tokens.css` and are not separate palette entries: glow amber `rgb(255 181 71 / 0.38)`, glow coral `rgb(255 107 87 / 0.34)`, glow mint `rgb(79 227 176 / 0.5)`, best-row tint and cobalt tint `rgb(124 155 255 / 0.1)` and `/ 0.14`, sheet scrim `rgb(5 8 18 / 0.72)`, skeleton highlight `rgb(124 155 255 / 0.32)`. The chip-pressed token above approximates the 0.14 cobalt tint as an 8-digit hex; the CSS value is normative.
+Derived values live in `src/styles/tokens.css`: best-row tint `rgb(198 244 50 / 0.08)`, hover tint `rgb(240 240 240 / 0.06)`, sheet scrim `rgb(0 0 0 / 0.72)`, skeleton highlight `rgb(240 240 240 / 0.16)`.
 
 ### Light theme mapping
 
-Applied under `@media (prefers-color-scheme: light)` by redefining the same custom properties; no component changes. Ground becomes pearl (`ground-day` #f4f6fb), surface a cool pale blue (`surface-day` #ecf0f8), hairline `hairline-day` #c5cde3, ink graphite navy (`ink-day` #131a33), muted `muted-day` #4f5b7a. The signal hues darken for contrast on pale ground: amber to a burnt amber (#b36500, casing #6d3f00), coral to a brick red (#b5301e, casing #6f1c11), mint to a deep green (#066a4b), cobalt to a deeper blue (#3552d9). Text on cobalt and on accent fills flips to white. Glow opacities drop (amber 0.22, coral 0.2, mint 0.3), the cobalt tints become 0.1, and the scrim becomes `rgb(19 26 51 / 0.45)`. `color-scheme` and the two `theme-color` meta tags (#0A0F1E dark, #F4F6FB light) follow the same switch. There is no manual theme toggle.
+Applied under `@media (prefers-color-scheme: light)` by redefining the same custom properties. Ground becomes `ground-day` #f5f5f3, surface #ebebe8, raised #e0e0dc, hairline #d0d0cb, ink #111111, muted #666666. The action colour becomes black (#111111) with white text, because lime has no contrast on light; red darkens to #d92c20 with white text; the road grey darkens to #3a3a3a. The scrim becomes `rgb(17 17 17 / 0.45)`. `color-scheme` and the two `theme-color` meta tags (#101010 dark, #F5F5F3 light) follow the same switch. There is no manual theme toggle.
 
 ### Named Rules
 
-**The Reserved Cobalt Rule.** Cobalt appears only on focus, the active segment, the primary action, and small acting links. It is never used to show data, status or decoration. Rows are not selectable, so no row ever turns cobalt.
+**The Meaning Rule.** Action means act or best, cost means traffic, road means the trip. No hue is used for decoration, and none is added without a meaning.
 
-**The Lit-Only Rule.** Light is the material, and only road bars and the BEST underline emit it. Text, borders, panels and icons never glow.
-
-**The Words-Not-Hues Rule.** The fastest slot and the worst slot are marked by the words BEST and PEAK and by shape (underline, tag), in addition to colour.
+**The Words-Not-Hues Rule.** The fastest and worst slots are marked by the words BEST and PEAK and by shape (underline, tag), in addition to colour.
 
 ## Typography
 
-**Display / Body / Label Font:** Archivo Variable (with Archivo, system-ui, -apple-system, Segoe UI, sans-serif), loaded through `@fontsource-variable/archivo/wdth.css` so the width axis is available. One family, two widths.
+**Voice font:** Instrument Serif (400), loaded from `@fontsource/instrument-serif`. **UI and figures font:** Schibsted Grotesk Variable, loaded from `@fontsource-variable/schibsted-grotesk`. Both are self-hosted so the PWA works offline.
 
-**Character:** Expanded Archivo (118) at heavy weights gives the answer and the figures a calm, engineered, signage-like authority; the normal width (100) keeps sentences readable; a slightly condensed width (92) tightens labels and tags. Body copy is set at 15px with a 1.35 line height and tabular lining figures.
+**Character:** The serif gives the answer and the wordmark a printed, human tone against the dark ground; the grotesque keeps the dense result grid crisp.
 
 ### Hierarchy
 
-- **Display** (800, `clamp(30px, 9.4vw, 40px)`, line-height 1.02, letter-spacing -0.02em, wdth 118): the answer headline ("Leave 14:08"), with the time in mint. Becomes `clamp(40px, 3.6vw, 52px)` at 900px and up (Display Wide), line-height 1.
-- **Title** (700, 22px, -0.01em, wdth 118): sheet and dialog titles. The brand wordmark in the band is the same treatment at 20px.
-- **Figure** (leave time 700 at 16px; minutes 800 at 15px; both wdth 118, tabular lining): the compared numbers in each row.
-- **Body** (400, 15px, line-height 1.35, wdth 100): inputs, the one-line comparison under the answer, bold figures inside it at 700.
-- **Body small** (13px for arrive, delta and hints; 14px for banners, chip text and buttons): secondary text.
-- **Label** (500, 12px, wdth 92, line-height 1.2): route field labels (From, To), column heads, legend. Settings group labels are 13px at the same weight and width.
-- **Tag** (800, 10px, letter-spacing 0.06em, wdth 92, uppercase by copy): BEST and PEAK. The SAMPLE DATA tag is 700 at 11px with 0.04em tracking.
+- **Display** (Instrument Serif, `clamp(40px, 12.5vw, 52px)`, line-height 1): "Leave 7:04 PM", the time in lime. `clamp(52px, 4.6vw, 68px)` at 900px and up.
+- **Title** (Instrument Serif, 28px): sheet and dialog titles, and the live preview line in the time picker. **Brand** is the same face at 24px.
+- **Figure** (Schibsted Grotesk): leave time 650 at 16px, minutes 750 at 15px, both lining figures; minutes and delta are also tabular so digits stack.
+- **Body** (400, 15px, line-height 1.35, lining figures): inputs, comparison lines, bold figures at 650.
+- **Body small** (13px arrive, delta, hints; 14px banners and buttons): secondary text.
+- **Label** (500, 12px): column heads, legend, picker column names (13px).
+- **Tag** (800, 10px, letter-spacing 0.06em): BEST and PEAK. SAMPLE DATA is 700 at 11px with 0.04em tracking.
 
 ### Named Rules
 
-**The Expanded Figures Rule.** Anything the driver compares or acts on (answer, leave, minutes, brand) is set at wdth 118; sentences stay at 100.
+**The Tabular Where It Stacks Rule.** Tabular figures are set only on the minutes and delta columns. Schibsted widens colons and punctuation under `tnum`, so clock times and sentences stay on proportional lining figures.
 
-**The Tabular Column Rule.** Tabular lining numerals are set on `body` and re-asserted on the table, so figures in each column align regardless of digit.
-
-**The Real Weights Rule.** Label weights are 500 in the build (not thin). Do not drop labels to light weights on the dark ground; they lose legibility.
+**The One Serif Rule.** Serif is for the wordmark, the answer, sheet titles and the picker preview, and the picker's day numbers. Never for data columns, labels or buttons.
 
 ## Layout
 
-**Spacing scale:** 4, 8, 12, 16, 24, 32 px (`space-1` to `space-6`). Hard-coded one-offs also appear in the build (6px, 10px, 14px, 36px, 48px) and are not tokens.
+**Spacing scale:** 4, 8, 12, 16, 24, 32 px (`space-1` to `space-6`).
 
-**Mobile (below 900px):** a single column, full width up to a max-width of 480px, centred. Order top to bottom: brand band, optional banner, route fields with swap and chips, when section, answer panel, legend and result rows, footer. Horizontal page padding is 16px. Touch targets are 44px (`touch`). Result rows are 38px tall with 1px hairline tops. Safe-area insets are respected on the shell and the footer and sheet padding.
+**Mobile (below 900px):** a single column, full width up to 480px, centred. Order: brand band (56px, no divider), optional notice banners, the From/To block with swap, the When row, the answer, legend and result rows, footer. Horizontal page padding is 16px. Touch targets are 44px. Result rows are 38px with 1px hairline tops. Safe-area insets are respected on the shell, footer and sheets.
 
-**Wide (900px and up):** the frame becomes up to 1100px wide with hairline borders on both inline edges, and `main` is a two-column grid: controls and answer on the left at 460px (sticky at the top), results on the right up to 640px, separated by a hairline. Rows grow to 44px, side padding rises to 24px, the answer panel pads 24px, the headline switches to Display Wide. The sheet becomes a centred 440px dialog with a 16px radius instead of a bottom sheet.
+**Wide (900px and up):** the frame becomes up to 1100px wide with hairline borders on both inline edges, and `main` is a two-column grid: controls and answer on the left at 460px (sticky), results on the right up to 640px. Rows grow to 44px. Sheets become a centred 440px dialog with a 20px radius.
 
-**Small phones (440px and below):** the segmented control tightens (10px padding, 13px text), the time pill drops its clock icon, and the Change text link collapses to a 44px pencil icon button.
+**Small phones (440px and below):** the When segments tighten (12px padding, 13px text) and the time button drops its clock icon.
 
-**Results grid:** five columns share a single table grid so figures align: Leave (expanded, left), Duration (the bar, takes remaining width, minimum 80px), Min (right), Arrive (right, muted), delta versus the first slot (right, coral for plus, mint for minus, muted dash for the first row). All bars share one track scale so lengths compare across rows.
+**Results grid:** five columns share one table grid: Leave (left), Duration (the bar, remaining width, minimum 80px), Min (right), Arrive (right, muted), delta versus the first slot (right). All bars share one track scale.
 
-**Rhythm:** regions are separated by 1px hairlines rather than gaps. Vertical padding is tight and uniform within a region; the density target is that controls, answer and all nine rows fit the 390 by 844 first viewport.
-
-Breakpoints are not tokenised: 900px and 440px appear as literals in the component CSS.
+**Rhythm:** the first viewport at 390 by 844 holds the controls, the answer and all nine rows without scrolling.
 
 ## Elevation & Depth
 
-Flat. There are no shadows on panels, cards, buttons, fields, popovers or sheets. Depth is conveyed by one tonal step (ground to surface) and by hairlines. The only `box-shadow` in the build is the bounded glow on road bars and the BEST underline, and it is light, not elevation.
-
-### Shadow Vocabulary
-
-- **Trip glow** (`box-shadow: 0 0 8px var(--glow-amber)`): the amber trip segment of a bar.
-- **Overage glow** (`box-shadow: 0 0 8px var(--glow-coral)`): the coral overhang segment.
-- **Best edge** (`box-shadow: 0 0 8px var(--glow-mint)`): the 3px mint underline 6px below the best bar.
+Flat. There are no shadows, no glow and no outlines for resting controls. Depth is one tonal step per layer: ground, then `surface`, then `raised` for what is hovered, focused or floating. A sheet is separated from the page by the scrim.
 
 ### Named Rules
 
-**The Flat Panels Rule.** Panels, sheets, popovers and fields never carry a shadow. A sheet is separated from the page by the scrim and a 1px hairline.
-
-**The Bounded Glow Rule.** Glow is an 8px, low-opacity bleed that stays inside the row. It is never larger, never animated, never applied to text, borders or panels.
+**The Flat Rule.** No `box-shadow` anywhere. Hover and focus raise a control one tonal step; popovers use `raised` plus a 1px hairline.
 
 ## Shapes
 
-Control geometry is fully rounded: buttons, the segmented control, the time pill, chips, the swap and locate buttons, and round icon buttons all use 999px. The stacked From/To fields are one 10px-radius block (the top field rounds its top corners, the bottom field its bottom corners, joined by a shared hairline). Tags (SAMPLE DATA, BEST, PEAK) are 4px. Sheets are 16px (top corners only on mobile). Road bars are square-cornered, cased strokes: a 1px darker casing on a flat fill, the trip and overhang butted together with the casing doubled up removed at the join. Borders are 1px hairline at rest and 1px cobalt on hover, active or focus-within. Empty-slot chips use a dashed hairline border. The brand mark is a 28 by 14 miniature of a bar: an amber trip block with a coral end, cased the same way.
+Controls are pills (999px): buttons, the segmented control, the time button, the swap and locate buttons, round icon buttons. Fields, day chips, picker columns and popovers are 14px rounded blocks; the From and To rows form one block (top row rounds its top corners, bottom row its bottom corners). Options inside a popover are 10px. Road bars have 3px radius ends; the trip and overhang butt together with no gap. Tags are 4px. Sheets are 20px (top corners only on mobile). The route rail uses a hollow circle for From, a filled rounded square for To, and a dotted vertical line between them. The brand mark is a 26 by 12 miniature of a bar: a grey trip block and an red overhang.
 
 ## Components
 
 ### Brand band
 
-Slim 48px band with a bottom hairline: the road mark and "Home Timer" in Title/Brand (20px, 700, wdth 118) on the left, a 44px round settings icon button on the right in muted, ink on hover. Left padding 16px, right padding 8px.
+56px band, no divider: the road mark and "Home Timer" in Brand (Instrument Serif 24px) on the left, a 44px round settings button in muted on the right (`raised`-tint hover).
 
-### Route fields, swap and chips
+### Route block, swap and locate
 
-- **Fields:** two stacked 44px fields (From above, To below) forming one 10px-radius block on ground fill, 1px hairline border, 12px left padding. A 34px muted label (12px, 500, wdth 92) precedes a 15px input. Focus-within turns the border cobalt and raises z-index; the input's own outline is suppressed in favour of that border.
-- **Locate:** a 44px round cobalt icon button inside the From field (muted when disabled, with a spin animation while locating).
-- **Swap:** a 44px round button in a second grid column, 1px hairline border, cobalt icon, cobalt border on hover.
-- **Chips:** Set Home / Set Work / saved places as 36px-tall pills inside a 44px touch target, 14px side padding, 14px 600 text. Pressed state is cobalt border, 0.14 cobalt tint, cobalt text. An unset place renders dashed and muted with a plus icon.
+- **Block:** two 52px rows (From above, To below) on `surface`, sharing one 14px-radius block with a hairline divider inset from the rail. The rail carries a 12px marker per row; the visible From/To text labels are replaced by visually hidden labels.
+- **Row states:** hover fills `raised`; focus-within also draws a 2px lime outline inset on the row and hides the rail line.
+- **Locate:** a 44px round lime icon button inside the From row (muted when disabled, spinning while locating).
+- **Swap:** a 44px round `surface` button in a second grid column; it turns 180 degrees while pressed.
 
-### Segmented control and time pill
+### Place dropdown
 
-- **Segmented:** a 44px pill container with a 1px hairline border holding Now and Leave at. Idle segments are muted 14px 600 text; the checked segment fills cobalt with `on-cobalt` text. A visually hidden radio sits over each option; focus-visible draws the 2px cobalt ring with 2px offset.
-- **Time pill:** a flex-filling 44px pill (basis 160px) showing the chosen day and time in 14px 700. Muted with a hairline border when "Now"; ink with a cobalt border when active. A fully transparent native date-time input covers the pill so it keeps the label, keyboard editing and platform picker. A "Change" text link (12px, 600, cobalt) sits at the right and becomes a pencil icon at 440px and below.
+The From and To inputs are an ARIA combobox. Focused with nothing typed, the popover lists the saved places: **Home** and **Work** with a 32px icon disc, the label (600) and the address (13px muted). An unset place reads "Set Home" with a dashed disc and a plus, and opens the set-up dialog. Typing swaps the list for search results. Choosing an entry fills only the field it was opened from, closes the list and blurs the input; nothing keeps a selected state. The popover sits 8px below the row on `raised` with a 1px hairline and a 14px radius, 320px max height, entering with a 4px rise.
 
-### Answer panel
+### When row and time picker
 
-The only filled region: surface fill, bottom hairline, 10px 16px padding (24px on wide). Holds the headline "Leave" in Display with the departure time in mint, an optional SAMPLE DATA tag at the right (1px muted border, 4px radius, muted 11px 700 text), and one or two 15px comparison lines in ink with 700 figures ("27 min, arrive 14:35 - 6 min faster than 12:08"). While loading it shows skeleton bones (headline 62% by 34px, lines 88% and 54% by 14px) with a hairline-to-cobalt shimmer.
+- **Segmented:** a 44px `surface` pill with 3px padding holding Now and Leave at. Idle text is muted; the checked segment fills lime with `on-action` text. Choosing Leave at opens the picker.
+- **Time button:** a flex-filling 44px `surface` pill showing the day and time (14px, 650) with a pencil icon at the right; muted while the mode is Now, ink once a time is set. It opens the picker.
+- **Picker sheet:** a bottom sheet on mobile, a centred dialog on wide. Title "Leave at" (Title), a close button, then a horizontally scrolling row of seven **day chips** (weekday above a serif day number; Today and Tomorrow spelled out), two scrolling **columns** (Hour in the device locale, Minute in 5-minute steps) on `raised` with 44px entries, a serif live preview ("Today, 5:15 PM"), and Cancel and Set time actions. The selected day, hour and minute fill lime. Past times today are disabled and struck through; picking a day that would put the time in the past lands on the earliest valid time. All three groups are native radio groups, so arrow keys work.
+
+### Answer
+
+No panel: the headline sits on the ground with 24px above and 16px below. "Leave" in ink and the time in lime (Display), an optional SAMPLE DATA tag at the right (1px muted border, 4px radius), and one or two 15px comparison lines with 650 figures. Loading shows skeleton greys (headline 62% by 44px, lines 88% and 54% by 14px) with a hairline-to-ink shimmer.
 
 ### Results table and RoadBar
 
-- **Legend:** two 14 by 8px cased swatches (amber: "Trip at its fastest"; coral: "Extra minutes from traffic"), 12px muted.
-- **Rows:** 38px, hairline top, no row selection, no hover treatment. Leave in expanded 16px 700, minutes in expanded 15px 800, arrive and delta in 13px muted (delta coral or mint at 600).
-- **RoadBar:** a 12px-high track. Width is trip plus overage as a share of one shared scale. Trip segment: amber fill, 1px amber casing, 8px amber glow. Overage segment: coral fill, 1px coral casing (left casing removed so the join is single), 8px coral glow. A bar draws in from the left (scaleX 0 to 1) over 600ms with `cubic-bezier(0.16, 1, 0.3, 1)` and 35ms stagger per row.
-- **PEAK:** the worst slot's word sits inside the coral overhang (10px 800, 0.06em, `on-accent`) when wide enough, else a coral tag beside the bar.
-- **BEST:** a full-row cobalt tint (0.1), a mint BEST tag (10px 800, 0.06em, `on-accent` text) beside the bar, and a 3px mint underline 6px below the bar, full bar width, with a mint glow, drawn in with the bar. No coloured side stripe.
-- **States:** loading rows show a 60% by 12px shimmer skeleton in the bar cell; error rows show a muted 12px hint; spent (past) rows strike the leave time through in muted 500 and dim the bar to 0.45.
+- **Legend:** two 14 by 8px swatches (grey: "Trip at its fastest"; red: "Extra minutes from traffic"), 12px muted.
+- **Rows:** 38px, hairline top, not selectable, no hover. Leave in 16px 650, minutes in 15px 750 tabular, arrive and delta in 13px muted (delta red for plus, lime for minus).
+- **RoadBar:** a 10px-high track. Trip segment grey, overhang red, both flat; width is trip plus overage as a share of one shared scale. A bar draws in from the left (scaleX 0 to 1) over 600ms with `cubic-bezier(0.16, 1, 0.3, 1)` and a 35ms stagger.
+- **PEAK:** the word sits inside the red overhang (10px 800, `on-cost`) when wide enough, else a red tag beside the bar.
+- **BEST:** a full-row lime tint (0.08), a lime BEST tag beside the bar, and a 3px lime underline 6px below the bar at full bar width, drawn in with it.
+- **States:** loading rows show a 60% by 10px shimmer; error rows show a muted 12px hint; spent (past) rows strike the leave time through in muted and dim the bar to 0.45.
 
 ### Banners
 
-48px minimum height, 16px side padding, 12px gap, bottom hairline, 14px text with a leading icon and an optional action (for example a primary "Add key" button). Tone is carried by the icon colour only: info cobalt, warning amber, error coral. There is no tinted background and no side stripe.
+48px minimum height on `surface`, 16px side padding, 12px gap, 14px text with a leading icon and an optional action. Tone is carried by the icon colour only: info muted, warning lime, error red.
 
 ### Settings sheet and place dialog
 
-A native `dialog` sheet: surface fill, 1px top hairline, 16px top radius, scrim `rgb(5 8 18 / 0.72)` behind it, anchored to the bottom on mobile (max height `min(92dvh, 720px)`) and a centred 440px dialog with a full hairline border at 900px and up. Title in Title (22px, 700, wdth 118) with a 44px round close button. Groups stack with 24px gaps; labels are 13px 500 wdth 92 muted. The API key row is a 48px, 10px-radius field on ground fill with a 16px input and a reveal icon button; focus-within turns the border cobalt. Language is a two-option pill radio group using the segment-active pattern. A hairline-topped privacy note in 13px muted precedes right-aligned actions (quiet and primary buttons).
+A native `dialog` sheet: `surface` fill, 20px top radius, scrim behind it, rising 24px on open, anchored to the bottom on mobile (max height `min(92dvh, 720px)`) and a centred 440px dialog at 900px and up. Titles use Title (Instrument Serif 28px) with a 44px round close button. Groups stack with 24px gaps; labels are 13px 500 muted. Language is a two-option pill radio group using the segment-active pattern. A hairline-topped privacy note in 13px muted precedes right-aligned actions.
 
 ### Buttons
 
-- **Primary:** cobalt pill, `on-cobalt` text, 44px minimum height, 16px side padding, 14px 600. Hover `filter: brightness(1.08)`. Disabled is hairline fill with muted text.
-- **Quiet:** transparent pill, 1px hairline border, ink text; hover turns border and text cobalt.
-- Text-link actions (Refresh, Change, Save as) are cobalt 600-700 text; Save as is underlined.
-
-### Place combobox
-
-The From and To inputs are an ARIA combobox. The popover sits 4px below the field, surface fill, 1px hairline border, 10px radius, no shadow, 280px max height, scrolling. Options are at least 44px tall with 8px 12px padding, hairline tops (none on the first), a 600-weight label and a 13px muted address. The active option (keyboard or hover) takes the 0.14 cobalt tint. A message row (14px muted) shows empty and no-result states. The matched prefix in the field display is bolded (700).
+- **Primary:** lime pill, `on-action` text, 44px minimum height, 24px side padding, 15px 650. Hover brightens slightly; pressing scales to 0.98. Disabled is `raised` fill with muted text.
+- **Quiet:** transparent pill, 1px hairline border, ink text; hover fills the hover tint and strengthens the border.
+- Text-link actions (Refresh, Save as) are lime 650-700 text; Save as is underlined.
 
 ### Footer
 
-Top hairline, 16px side padding (24px wide), bottom padding equal to the safe-area inset. Left: "Estimated from typical traffic" in 12px muted. Right: a Refresh action, cobalt 13px 700 with a 44px target and a 6px-gap refresh icon; underlined on hover.
+16px side padding (24px wide), bottom padding equal to the safe-area inset, no divider. Left: "Estimated from typical traffic" in 12px muted. Right: a lime Refresh action with a 44px target and a refresh icon.
 
 ### Motion
 
-There are no state transitions in the build: hover, focus and checked states change instantly. Motion exists in exactly three places: the bar draw-in (600ms, `cubic-bezier(0.16, 1, 0.3, 1)`, 35ms stagger), the skeleton shimmer (1.4s linear, infinite) and the locate spinner (900ms linear, infinite). Under `prefers-reduced-motion: reduce` the draw-in, shimmer and spinner are all disabled and bars appear instantly.
+Controls change state over 120ms (background, border and colour on hover, press and checked). Popovers enter over 220ms with a 4px rise, sheets over 220ms with a 24px rise. The bar draw-in (600ms, 35ms stagger), the skeleton shimmer (1.4s) and the locate spinner (900ms) are unchanged. Under `prefers-reduced-motion: reduce` every transition, the sheet and popover entrances, the draw-in, shimmer and spinner are disabled (`--dur-fast` and `--dur-enter` collapse to 0ms).
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** divide regions with 1px `hairline` borders and let the single `surface` step (the answer panel and sheets) be the only raised tone.
-- **Do** build every bar as a cased stroke: 1px darker casing, flat lit fill, 8px glow, amber for the trip and coral for the overage on one shared scale.
-- **Do** keep cobalt for focus (2px ring, 2px offset), the active segment, the primary action and small acting links, and nothing else.
-- **Do** set compared numbers in expanded Archivo (wdth 118) on tabular lining figures, and body sentences at wdth 100.
-- **Do** mark BEST and PEAK with words and shape as well as colour, and mark demo data with a visible SAMPLE DATA tag.
+- **Do** keep lime for things you can act on and for the best slot, red for traffic cost, grey for the trip.
+- **Do** raise by tone (`surface`, then `raised`) and separate result rows with 1px hairlines.
+- **Do** set the answer, wordmark and sheet titles in Instrument Serif and everything else in Schibsted Grotesk.
+- **Do** keep tabular figures to the minutes and delta columns.
+- **Do** mark BEST and PEAK with words and shape as well as colour, and demo data with a visible SAMPLE DATA tag.
 - **Do** keep 44px minimum touch targets and 16px mobile side padding; honour safe-area insets.
 - **Do** swap tokens for light mode (same names, new values) rather than adding light-only components.
-- **Do** disable every animation under `prefers-reduced-motion: reduce` and render bars at full length.
+- **Do** let a shortcut act and then disappear: choosing Home or Work fills one field and leaves nothing highlighted.
 
 ### Don't:
 
-- **Don't** add drop shadows, cards, raised buttons or elevation of any kind; the only box-shadow is the bounded 8px glow on road bars and the BEST underline.
-- **Don't** let glow touch text, borders, panels, icons or any element that is not a road bar or the BEST underline.
-- **Don't** use coloured side stripes or left/right accent borders on rows, banners or panels; the best row is a full-row tint plus the underline.
+- **Don't** add drop shadows or glow of any kind.
+- **Don't** use coloured side stripes or left/right accent borders on rows, banners or panels.
 - **Don't** add eyebrow labels, kickers or small-caps overlines above headings or sections.
-- **Don't** use cobalt for data, status, decoration or row selection, and don't make rows selectable.
-- **Don't** use proportional or oldstyle figures in any numeric column.
+- **Don't** use lime or red for decoration, and don't make result rows selectable.
+- **Don't** set serif type in data columns, labels or buttons.
+- **Don't** apply `tnum` to clock times or running text.
 - **Don't** convey fastest, slowest or sample status by hue alone.
 - **Don't** hard-code new colours, radii or font sizes in components when a token exists; add one-off pixel values to the tokens first.
 
-**Known build drift, not canonized:** several literal pixel values (6, 10, 14, 36, 48px), the 900px and 440px breakpoints, the 16px sheet radius, and the shimmer and spinner durations are hard-coded in component CSS with no token. The chip tint is approximated in the frontmatter as an 8-digit hex. Labels use weight 500, not the thinner weights the direction contract suggested.
+**Known build drift, not canonized:** a few literal pixel values (52px field rows, 68px day chips, 220px picker columns, 320px popover height) and the 900px and 440px breakpoints are hard-coded in component CSS with no token. The travel-day window in the picker (7 days) is a constant until TomTom's maximum departAt is verified.

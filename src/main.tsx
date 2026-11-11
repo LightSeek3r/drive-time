@@ -1,4 +1,5 @@
-import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/schibsted-grotesk/wght.css';
+import '@fontsource/instrument-serif/latin-400.css';
 import './styles/global.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';

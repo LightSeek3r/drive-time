@@ -111,12 +111,12 @@ describe('App', () => {
     expect(lastTripStore.get()).toEqual({ from: work, to: home });
   });
 
-  it('fills the To field from a saved chip by default, From once it was focused', async () => {
+  it('fills the focused field from its saved-place shortcuts', async () => {
     placesStore.set({ home, work });
     lastTripStore.set({ from: null, to: null });
     renderApp();
     await userEvent.click(screen.getByRole('combobox', { name: 'From' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Work' }));
+    await userEvent.click(screen.getByRole('option', { name: /^Work/ }));
     expect(lastTripStore.get().from).toEqual(work);
   });
 
@@ -181,10 +181,11 @@ describe('App', () => {
     expect(refresh).toHaveBeenCalledOnce();
   });
 
-  it('opens a search dialog for an unsaved Home chip and saves the chosen place', async () => {
+  it('opens a search dialog for an unsaved Home shortcut and saves the chosen place', async () => {
     mocks.search.mockReturnValue({ suggestions: [home], status: 'ready', error: null });
     renderApp();
-    await userEvent.click(screen.getByRole('button', { name: 'Set Home' }));
+    await userEvent.click(screen.getByRole('combobox', { name: 'To' }));
+    await userEvent.click(screen.getByRole('option', { name: /^Set Home/ }));
     const dialog = screen.getByRole('dialog', { name: 'Set Home' });
     await userEvent.type(within(dialog).getByRole('combobox'), 'lil');
     await userEvent.click(within(dialog).getByRole('option', { name: /Maison/ }));

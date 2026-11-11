@@ -1,14 +1,9 @@
-import { useId, useRef } from 'react';
+import { useId, useState } from 'react';
 import type { StartTime } from '../../domain/types';
-import {
-  formatClock,
-  formatDay,
-  fromLocalInputValue,
-  nextQuarterHour,
-  toLocalInputValue,
-} from '../../format/time';
+import { formatClock, formatDay, nextQuarterHour } from '../../format/time';
 import { useT } from '../../i18n';
 import { Icon } from '../Icon/Icon';
+import { TimePickerSheet } from '../TimePickerSheet/TimePickerSheet';
 import styles from './WhenSection.module.css';
 
 interface WhenSectionProps {
@@ -20,17 +15,9 @@ interface WhenSectionProps {
 export function WhenSection({ start, now, onChange }: WhenSectionProps) {
   const t = useT();
   const groupName = useId();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const shown = start.mode === 'at' ? start.at : now;
-  const pickerValue = toLocalInputValue(start.mode === 'at' ? start.at : nextQuarterHour(now));
   const dayLabel = formatDay(shown, now, { today: t('today'), tomorrow: t('tomorrow') });
-
-  const openPicker = () => {
-    const input = inputRef.current;
-    if (input === null) return;
-    if (typeof input.showPicker === 'function') input.showPicker();
-    else input.focus();
-  };
 
   return (
     <section className={styles.when}>
@@ -52,39 +39,40 @@ export function WhenSection({ start, now, onChange }: WhenSectionProps) {
             name={groupName}
             className={styles.radio}
             checked={start.mode === 'at'}
-            onChange={() => onChange({ mode: 'at', at: nextQuarterHour(now) })}
+            onChange={() => {
+              onChange({ mode: 'at', at: nextQuarterHour(now) });
+              setPickerOpen(true);
+            }}
           />
           <span className={styles.optionText}>{t('leaveAt')}</span>
         </label>
       </fieldset>
 
-      <div className={styles.time} data-active={start.mode === 'at'}>
+      <button
+        type="button"
+        className={styles.time}
+        data-active={start.mode === 'at'}
+        aria-haspopup="dialog"
+        aria-label={t('when_change_label')}
+        onClick={() => setPickerOpen(true)}
+      >
         <Icon name="clock" size={16} className={styles.icon} />
         <span className={styles.value}>
           {dayLabel}, {formatClock(shown)}
         </span>
-        <input
-          ref={inputRef}
-          type="datetime-local"
-          className={styles.native}
-          aria-label={t('when_input_label')}
-          value={pickerValue}
-          min={toLocalInputValue(now)}
-          onChange={(event) => {
-            const at = fromLocalInputValue(event.target.value);
-            if (at !== null) onChange({ mode: 'at', at });
-          }}
-        />
-        <button
-          type="button"
-          className={styles.change}
-          onClick={openPicker}
-          aria-label={t('when_change_label')}
-        >
-          <span className={styles.changeText}>{t('change')}</span>
-          <Icon name="edit" size={18} className={styles.changeIcon} />
-        </button>
-      </div>
+        <Icon name="edit" size={16} className={styles.edit} />
+      </button>
+
+      <TimePickerSheet
+        open={pickerOpen}
+        now={now}
+        initial={start.mode === 'at' ? start.at : nextQuarterHour(now)}
+        onApply={(at) => {
+          onChange({ mode: 'at', at });
+          setPickerOpen(false);
+        }}
+        onClose={() => setPickerOpen(false)}
+      />
     </section>
   );
 }

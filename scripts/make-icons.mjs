@@ -24,7 +24,7 @@ const generateIcons = async () => {
     for (const { name, size } of sizes) {
       const outputPath = path.join(iconDir, name);
       await sharp(svgPath)
-        .resize(size, size, { fit: 'contain', background: { r: 10, g: 15, b: 30, alpha: 1 } })
+        .resize(size, size, { fit: 'contain', background: { r: 16, g: 16, b: 16, alpha: 1 } })
         .png()
         .toFile(outputPath);
       console.log(`✓ ${name}`);
@@ -33,15 +33,18 @@ const generateIcons = async () => {
     // Generate maskable icon (512, with safe zone)
     const maskablePath = path.join(iconDir, 'icon-maskable-512.png');
     await sharp(svgPath)
-      .resize(512, 512, { fit: 'contain', background: { r: 10, g: 15, b: 30, alpha: 1 } })
+      .resize(512, 512, { fit: 'contain', background: { r: 16, g: 16, b: 16, alpha: 1 } })
       .png()
       .toFile(maskablePath);
     console.log('✓ icon-maskable-512.png');
 
-    // Copy SVG to favicon
-    const faviconPath = path.join(__dirname, '../public/favicon.svg');
-    fs.copyFileSync(svgPath, faviconPath);
-    console.log('✓ favicon.svg');
+    // The favicon is drawn separately: the app icon's padding is unreadable at 16px.
+    const faviconSvg = path.join(__dirname, '../public/favicon.svg');
+    await sharp(faviconSvg, { density: 384 })
+      .resize(32, 32)
+      .png()
+      .toFile(path.join(iconDir, 'favicon-32.png'));
+    console.log('✓ favicon-32.png');
 
     console.log('\nAll icons generated successfully!');
   } catch (err) {

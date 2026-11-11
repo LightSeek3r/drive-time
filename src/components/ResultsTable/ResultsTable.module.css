@@ -22,19 +22,18 @@
   display: block;
   width: 14px;
   height: 8px;
-  border: 1px solid var(--amber-casing);
-  background: var(--amber);
+  border-radius: var(--radius-bar);
+  background: var(--road);
 }
 
 .swatchExtra {
-  border-color: var(--coral-casing);
-  background: var(--coral);
+  background: var(--cost);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-variant-numeric: tabular-nums lining-nums;
+  font-variant-numeric: lining-nums;
 }
 
 .table th,
@@ -66,7 +65,6 @@
 
 .head th {
   font-weight: 500;
-  font-stretch: var(--stretch-label);
   line-height: 1.2;
   vertical-align: bottom;
   padding-bottom: var(--space-1);
@@ -82,6 +80,12 @@
   text-align: right;
 }
 
+/* Tabular figures only where digits stack; in a clock they would also widen the colon. */
+tbody .minutes,
+tbody .delta {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 .row {
   height: var(--row-height);
   border-top: 1px solid var(--hairline);
@@ -89,8 +93,7 @@
 
 tbody .leave {
   font-size: var(--text-lg);
-  font-weight: 700;
-  font-stretch: var(--stretch-display);
+  font-weight: 650;
 }
 
 .barCell {
@@ -100,8 +103,7 @@ tbody .leave {
 
 tbody .minutes {
   font-size: var(--text-base);
-  font-weight: 800;
-  font-stretch: var(--stretch-display);
+  font-weight: 750;
 }
 
 .arrive,
@@ -115,12 +117,12 @@ tbody .delta {
 }
 
 .up {
-  color: var(--coral);
+  color: var(--cost);
   font-weight: 600;
 }
 
 .down {
-  color: var(--mint);
+  color: var(--action);
   font-weight: 600;
 }
 
@@ -144,8 +146,8 @@ tbody .delta {
 .skeleton {
   display: block;
   width: 60%;
-  height: 12px;
-  border-radius: 2px;
+  height: var(--bar-height);
+  border-radius: var(--radius-bar);
   background: linear-gradient(
     90deg,
     var(--skeleton-low) 0%,

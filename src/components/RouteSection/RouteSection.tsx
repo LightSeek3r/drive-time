@@ -3,7 +3,7 @@ import type { Lang, Place, SavedPlaceKey, SavedPlaces } from '../../domain/types
 import type { GeoState } from '../../hooks/useGeolocation';
 import { useT } from '../../i18n';
 import { Icon } from '../Icon/Icon';
-import { PlaceChips } from '../PlaceChips/PlaceChips';
+import type { PlaceShortcut } from '../PlaceField/PlaceField';
 import { PlaceSearchField } from '../PlaceSearchField/PlaceSearchField';
 import { SaveAsPrompt } from '../SaveAsPrompt/SaveAsPrompt';
 import styles from './RouteSection.module.css';
@@ -27,6 +27,8 @@ interface RouteSectionProps {
   onSetUp: (key: SavedPlaceKey) => void;
 }
 
+const SAVED_KEYS = ['home', 'work'] as const;
+
 function geoMessageKey(geo: GeoState) {
   switch (geo.status) {
     case 'denied':
@@ -42,7 +44,7 @@ function geoMessageKey(geo: GeoState) {
 
 function savedName(place: Place | null, saved: SavedPlaces): SavedPlaceKey | undefined {
   if (place === null) return undefined;
-  return (['home', 'work'] as const).find((key) => {
+  return SAVED_KEYS.find((key) => {
     const candidate = saved[key];
     return candidate !== undefined && samePlace(place, candidate);
   });
@@ -75,6 +77,26 @@ export function RouteSection({
     const key = savedName(place, saved);
     return key === undefined ? undefined : t(key);
   };
+  const shortcutsFor = (field: RouteFieldName): PlaceShortcut[] =>
+    SAVED_KEYS.map((key) => {
+      const place = saved[key];
+      if (place === undefined) {
+        return {
+          id: `set-${key}`,
+          label: t('set_place', { name: t(key) }),
+          icon: 'plus',
+          setup: true,
+          onChoose: () => onSetUp(key),
+        };
+      }
+      return {
+        id: `saved-${key}`,
+        label: t(key),
+        address: place.address === '' ? place.label : place.address,
+        icon: key,
+        onChoose: () => onPick(field, place),
+      };
+    });
 
   return (
     <section className={styles.route}>
@@ -82,12 +104,14 @@ export function RouteSection({
         <div className={styles.stack}>
           <PlaceSearchField
             shape="top"
+            marker="from"
             label={t('from')}
             placeholder={isSample ? t('sample_home') : undefined}
             value={from}
             tag={tagOf(from)}
             lang={lang}
             near={to?.position}
+            shortcuts={shortcutsFor('from')}
             onFocus={() => onActivate('from')}
             onSelect={(place) => onPick('from', place)}
             trailing={
@@ -109,12 +133,14 @@ export function RouteSection({
           />
           <PlaceSearchField
             shape="bottom"
+            marker="to"
             label={t('to')}
             placeholder={isSample ? t('sample_work') : undefined}
             value={to}
             tag={tagOf(to)}
             lang={lang}
             near={from?.position}
+            shortcuts={shortcutsFor('to')}
             onFocus={() => onActivate('to')}
             onSelect={(place) => onPick('to', place)}
           />
@@ -131,12 +157,6 @@ export function RouteSection({
         </p>
       )}
 
-      <PlaceChips
-        saved={saved}
-        activePlace={activePlace}
-        onUse={(place) => onPick(activeField, place)}
-        onSetUp={onSetUp}
-      />
       {canSave && <SaveAsPrompt onSave={onSaveAs} />}
     </section>
   );

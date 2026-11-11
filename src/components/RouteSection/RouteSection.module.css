@@ -1,9 +1,7 @@
 .route {
   display: flex;
   flex-direction: column;
-  gap: 0;
   padding: var(--space-2) var(--space-4) 0;
-  border-bottom: 1px solid var(--hairline);
 }
 
 .fields {
@@ -14,7 +12,20 @@
 }
 
 .stack {
+  position: relative;
   grid-column: 1;
+}
+
+/* The dotted line joining the From and To markers; markers sit above it. */
+.stack:not(:focus-within)::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 40px;
+  bottom: 40px;
+  left: 21px;
+  border-left: 2px dotted var(--muted);
+  pointer-events: none;
 }
 
 .swap {
@@ -23,13 +34,20 @@
   place-items: center;
   width: var(--touch);
   height: var(--touch);
-  border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
-  color: var(--cobalt);
+  background: var(--surface);
+  color: var(--ink);
+  transition:
+    background-color var(--dur-fast),
+    transform var(--dur-enter) var(--ease-out);
 }
 
 .swap:hover {
-  border-color: var(--cobalt);
+  background: var(--raised);
+}
+
+.swap:active {
+  transform: rotate(180deg);
 }
 
 .locate {
@@ -39,7 +57,12 @@
   width: var(--touch);
   height: var(--touch);
   border-radius: var(--radius-pill);
-  color: var(--cobalt);
+  color: var(--action);
+  transition: background-color var(--dur-fast);
+}
+
+.locate:hover:not(:disabled) {
+  background: var(--tint-hover);
 }
 
 .locate:disabled {
@@ -63,7 +86,7 @@
 }
 
 .geoMessage {
-  padding-top: var(--space-1);
+  padding-top: var(--space-2);
   font-size: var(--text-sm);
   color: var(--muted);
 }

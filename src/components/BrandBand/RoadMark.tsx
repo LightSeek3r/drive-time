@@ -1,9 +1,9 @@
-/** The cased road glyph: an amber trip segment with a coral overhang, drawn like the result bars. */
+/** A miniature of the result bars: a trip segment with a traffic overhang. */
 export function RoadMark() {
   return (
-    <svg width="28" height="14" viewBox="0 0 28 14" aria-hidden="true" focusable="false">
-      <rect x="1" y="2" width="17" height="10" fill="var(--amber)" stroke="var(--amber-casing)" />
-      <rect x="18" y="2" width="9" height="10" fill="var(--coral)" stroke="var(--coral-casing)" />
+    <svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true" focusable="false">
+      <rect x="0" y="2" width="16" height="8" rx="2" fill="var(--road)" />
+      <rect x="17" y="2" width="9" height="8" rx="2" fill="var(--cost)" />
     </svg>
   );
 }

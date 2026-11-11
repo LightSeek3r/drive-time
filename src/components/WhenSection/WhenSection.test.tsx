@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { StartTime } from '../../domain/types';
+import { formatHour } from '../../format/time';
 import { I18nProvider } from '../../i18n';
 import { WhenSection } from './WhenSection';
 
@@ -41,21 +42,30 @@ describe('WhenSection', () => {
     expect(screen.getByText(/^Today, .*7[:.]45/)).toBeInTheDocument();
   });
 
-  it('sets a start time from the native input and never allows the past', () => {
-    const { onChange } = setup({ mode: 'now' });
-    const input = screen.getByLabelText('Leave at');
-    expect(input).toHaveAttribute('type', 'datetime-local');
-    expect(input).toHaveAttribute('min', '2026-11-10T07:31');
-    fireEvent.change(input, { target: { value: '2026-11-11T08:15' } });
-    expect(onChange).toHaveBeenCalledWith({ mode: 'at', at: new Date(2026, 10, 11, 8, 15) });
+  it('opens the picker when Leave at is chosen', async () => {
+    setup({ mode: 'now' });
+    expect(screen.queryByRole('dialog', { name: 'Leave at' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: 'Leave at…' }));
+    expect(screen.getByRole('dialog', { name: 'Leave at' })).toBeInTheDocument();
   });
 
-  it('opens the picker from Change', async () => {
-    setup({ mode: 'now' });
-    const input = screen.getByLabelText('Leave at') as HTMLInputElement;
-    const showPicker = vi.fn();
-    input.showPicker = showPicker;
+  it('sets a start time from the picker', async () => {
+    const { onChange } = setup({ mode: 'now' });
     await userEvent.click(screen.getByRole('button', { name: 'Change departure time' }));
-    expect(showPicker).toHaveBeenCalledOnce();
+    await userEvent.click(screen.getByRole('radio', { name: /^Tomorrow/ }));
+    await userEvent.click(screen.getByRole('radio', { name: formatHour(8) }));
+    await userEvent.click(
+      within(screen.getByRole('group', { name: 'Minute' })).getByRole('radio', { name: '15' }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Set time' }));
+    expect(onChange).toHaveBeenCalledWith({ mode: 'at', at: new Date(2026, 10, 11, 8, 15) });
+    expect(screen.queryByRole('dialog', { name: 'Leave at' })).not.toBeInTheDocument();
+  }, 15_000);
+
+  it('leaves the start time alone when the picker is cancelled', async () => {
+    const { onChange } = setup({ mode: 'now' });
+    await userEvent.click(screen.getByRole('button', { name: 'Change departure time' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

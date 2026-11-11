@@ -1,9 +1,21 @@
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { Place } from '../../domain/types';
 import { useT } from '../../i18n';
+import { Icon, type IconName } from '../Icon/Icon';
 import styles from './PlaceField.module.css';
 
 export type SearchStatus = 'idle' | 'loading' | 'ready' | 'error';
+
+/** A fixed entry offered before the user types (a saved place, or the prompt to set one up). */
+export interface PlaceShortcut {
+  id: string;
+  label: string;
+  address?: string;
+  icon: IconName;
+  /** An unset place: drawn as an invitation, not a destination. */
+  setup?: boolean;
+  onChoose: () => void;
+}
 
 interface PlaceFieldProps {
   label: string;
@@ -11,6 +23,8 @@ interface PlaceFieldProps {
   /** A saved-place name ("Home") shown in bold ahead of the address. */
   tag?: string;
   suggestions: readonly Place[];
+  /** Offered while the field is focused and empty of typing, so Home and Work are one pick away. */
+  shortcuts?: readonly PlaceShortcut[];
   status: SearchStatus;
   /** Shown in place of the list when the search failed. */
   errorMessage?: string;
@@ -21,8 +35,19 @@ interface PlaceFieldProps {
   trailing?: ReactNode;
   /** Where the field sits in the From/To stack, so the pair shares one hairline. */
   shape?: 'solo' | 'top' | 'bottom';
+  /** The glyph on the route rail; omit for a field outside the From/To stack. */
+  marker?: 'from' | 'to';
   /** Overrides the default search hint while the field is empty (e.g. a labelled sample route). */
   placeholder?: string;
+}
+
+interface Option {
+  id: string;
+  label: string;
+  address: string;
+  icon: IconName | null;
+  setup: boolean;
+  choose: () => void;
 }
 
 function addressOf(place: Place): string {
@@ -42,6 +67,7 @@ export function PlaceField({
   value,
   tag,
   suggestions,
+  shortcuts = [],
   status,
   errorMessage,
   onQueryChange,
@@ -49,6 +75,7 @@ export function PlaceField({
   onFocus,
   trailing,
   shape = 'solo',
+  marker,
   placeholder,
 }: PlaceFieldProps) {
   const t = useT();
@@ -61,25 +88,54 @@ export function PlaceField({
   const [focused, setFocused] = useState(false);
   const [draft, setDraft] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  const hasSuggestions = suggestions.length > 0;
+  const typing = draft !== null && draft.trim() !== '';
+  const showShortcuts = focused && !dismissed && !typing && shortcuts.length > 0;
   const showsMessage = status === 'loading' || status === 'error' || status === 'ready';
-  const open = focused && searching && (hasSuggestions || showsMessage);
+  const showResults = focused && searching && typing && (suggestions.length > 0 || showsMessage);
+  const open = showShortcuts || showResults;
   const text = draft ?? plainText(value, tag);
 
-  const choose = (place: Place) => {
-    onSelect(place);
+  const reset = () => {
+    // Blurring closes the keyboard on phones and keeps the shortcut list from reopening on the same focus.
+    inputRef.current?.blur();
     setDraft(null);
     setSearching(false);
     setActiveIndex(-1);
     onQueryChange('');
   };
 
+  const options: readonly Option[] = showShortcuts
+    ? shortcuts.map((shortcut) => ({
+        id: shortcut.id,
+        label: shortcut.label,
+        address: shortcut.address ?? '',
+        icon: shortcut.icon,
+        setup: shortcut.setup === true,
+        choose: () => {
+          reset();
+          shortcut.onChoose();
+        },
+      }))
+    : suggestions.map((place) => ({
+        id: place.id,
+        label: place.label,
+        address: place.address,
+        icon: null,
+        setup: false,
+        choose: () => {
+          reset();
+          onSelect(place);
+        },
+      }));
+  const hasOptions = options.length > 0;
+
   const move = (step: 1 | -1) => {
-    if (!hasSuggestions) return;
-    setSearching(true);
-    setActiveIndex((current) => (current + step + suggestions.length) % suggestions.length);
+    if (!hasOptions) return;
+    setDismissed(false);
+    setActiveIndex((current) => (current + step + options.length) % options.length);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -93,10 +149,10 @@ export function PlaceField({
         move(-1);
         break;
       case 'Enter': {
-        const chosen = suggestions[activeIndex] ?? (open ? suggestions[0] : undefined);
-        if (chosen !== undefined) {
+        const chosen = options[activeIndex] ?? (showResults ? options[0] : undefined);
+        if (open && chosen !== undefined) {
           event.preventDefault();
-          choose(chosen);
+          chosen.choose();
         }
         break;
       }
@@ -104,6 +160,7 @@ export function PlaceField({
         if (open) {
           event.preventDefault();
           event.stopPropagation();
+          setDismissed(true);
           setSearching(false);
           setActiveIndex(-1);
         } else if (draft !== null) {
@@ -122,7 +179,8 @@ export function PlaceField({
 
   return (
     <div className={`${styles.field} ${styles[shape]}`}>
-      <label htmlFor={inputId} className={styles.label}>
+      {marker !== undefined && <span className={`${styles.marker} ${styles[marker]}`} />}
+      <label htmlFor={inputId} className={marker === undefined ? styles.label : 'sr-only'}>
         {label}
       </label>
       <div className={styles.control}>
@@ -144,6 +202,7 @@ export function PlaceField({
           value={text}
           onFocus={(event) => {
             setFocused(true);
+            setDismissed(false);
             event.target.select();
             onFocus?.();
           }}
@@ -156,9 +215,11 @@ export function PlaceField({
           onChange={(event) => {
             setDraft(event.target.value);
             setSearching(true);
+            setDismissed(false);
             setActiveIndex(-1);
             onQueryChange(event.target.value);
           }}
+          onClick={() => setDismissed(false)}
           onKeyDown={handleKeyDown}
         />
         {!focused && value !== null && (
@@ -176,28 +237,35 @@ export function PlaceField({
           role="listbox"
           aria-label={label}
           className={styles.list}
-          hidden={!hasSuggestions}
+          hidden={!hasOptions}
         >
-          {suggestions.map((place, index) => (
+          {options.map((option, index) => (
             <li
-              key={place.id}
+              key={option.id}
               id={optionId(index)}
               role="option"
               aria-selected={index === activeIndex}
-              className={styles.option}
+              className={`${styles.option} ${option.setup ? styles.setup : ''}`}
               data-active={index === activeIndex}
               // Keeps focus in the input so the field's blur handler does not close the list first.
               onPointerDown={(event) => event.preventDefault()}
-              onClick={() => choose(place)}
+              onClick={option.choose}
             >
-              <span className={styles.optionLabel}>{place.label}</span>
-              {place.address !== '' && (
-                <span className={styles.optionAddress}>{place.address}</span>
+              {option.icon !== null && (
+                <span className={styles.optionIcon}>
+                  <Icon name={option.icon} size={16} />
+                </span>
               )}
+              <span className={styles.optionText}>
+                <span className={styles.optionLabel}>{option.label}</span>
+                {option.address !== '' && (
+                  <span className={styles.optionAddress}>{option.address}</span>
+                )}
+              </span>
             </li>
           ))}
         </ul>
-        {!hasSuggestions && (
+        {!hasOptions && (
           <p className={styles.message} role="status">
             {message}
           </p>

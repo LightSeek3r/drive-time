@@ -2,7 +2,7 @@
   "name": "home-timer",
   "private": true,
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "scripts": {
     "dev": "vite",
     "build": "npm run typecheck && vite build",
@@ -15,7 +15,8 @@
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

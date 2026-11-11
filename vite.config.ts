@@ -18,10 +18,11 @@ export default defineConfig(
             'When should I leave? Compare departure times and find the best one to avoid traffic.',
           orientation: 'portrait',
           categories: ['navigation', 'utilities'],
+          id: '/',
           start_url: '/',
           scope: '/',
-          background_color: '#0A0F1E',
-          theme_color: '#0A0F1E',
+          background_color: '#101010',
+          theme_color: '#101010',
           icons: [
             {
               src: '/icons/icon-192.png',
@@ -46,6 +47,8 @@ export default defineConfig(
           navigateFallbackDenylist: [/^\/api\//],
           // woff2 is outside the default glob; without it the app shell falls back to a system font offline.
           globPatterns: ['**/*.{js,css,html,woff2,svg,png,webmanifest}'],
+          // Only crawlers and link previews fetch these; the installed app never needs them.
+          globIgnores: ['og-image.png'],
           runtimeCaching: [
             {
               urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith('/api/'),
