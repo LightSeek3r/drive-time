@@ -1,10 +1,19 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "home-timer",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-10",
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
   },
+  "ratelimits": [
+    {
+      "name": "API_RATE_LIMITER",
+      "namespace_id": "814207",
+      "simple": { "limit": 60, "period": 60 },
+    },
+  ],
   "routes": [{ "pattern": "home-timer.unit42.fr", "custom_domain": true }],
 }

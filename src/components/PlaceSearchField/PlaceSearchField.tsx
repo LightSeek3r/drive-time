@@ -11,22 +11,15 @@ type PassThrough = Pick<
 >;
 
 interface PlaceSearchFieldProps extends PassThrough {
-  apiKey: string;
   lang: Lang;
   near?: LatLng;
 }
 
 /** Wires a PlaceField to the place search hook; the field itself stays presentational. */
-export function PlaceSearchField({
-  apiKey,
-  lang,
-  near,
-  onSelect,
-  ...field
-}: PlaceSearchFieldProps) {
+export function PlaceSearchField({ lang, near, onSelect, ...field }: PlaceSearchFieldProps) {
   const t = useT();
   const [query, setQuery] = useState('');
-  const { suggestions, status, error } = usePlaceSearch({ query, apiKey, lang, near });
+  const { suggestions, status, error } = usePlaceSearch({ query, lang, near });
   const errorMessage =
     error === null || error === 'aborted' ? undefined : t(ERROR_COPY[error].text);
 

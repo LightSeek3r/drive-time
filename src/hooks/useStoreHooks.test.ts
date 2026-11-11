@@ -62,18 +62,13 @@ describe('useSavedPlaces', () => {
 });
 
 describe('useSettings', () => {
-  it('merges patches and trims the API key', () => {
+  it('stores the language patch', () => {
     const { result } = renderHook(() => useSettings());
 
-    act(() => result.current.update({ apiKey: '  secret \n' }));
-    expect(result.current.settings.apiKey).toBe('secret');
-
     act(() => result.current.update({ lang: 'fr' }));
-    expect(result.current.settings).toEqual({ lang: 'fr', apiKey: 'secret' });
-    expect(JSON.parse(localStorage.getItem('ht:v1:settings') ?? '').data).toEqual({
-      lang: 'fr',
-      apiKey: 'secret',
-    });
+
+    expect(result.current.settings).toEqual({ lang: 'fr' });
+    expect(JSON.parse(localStorage.getItem('ht:v1:settings') ?? '').data).toEqual({ lang: 'fr' });
   });
 });
 

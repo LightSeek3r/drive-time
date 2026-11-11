@@ -7,8 +7,9 @@ import {
   type TrafficProvider,
 } from './trafficProvider';
 
-const ROUTING_URL = 'https://api.tomtom.com/routing/1/calculateRoute/';
-const SEARCH_URL = 'https://api.tomtom.com/search/2/search/';
+// Same-origin proxy (worker/) that adds the TomTom key; the browser never holds it.
+const ROUTING_URL = '/api/routing/1/calculateRoute/';
+const SEARCH_URL = '/api/search/2/search/';
 const SUGGEST_LIMIT = 6;
 
 const SEARCH_LANGUAGE: Record<Lang, string> = { en: 'en-GB', fr: 'fr-FR' };
@@ -19,21 +20,17 @@ const NO_ROUTE_CODES = /NO_ROUTE_FOUND|MAP_MATCHING_FAILURE/;
 const QUOTA_403 = /limit|qps|quota/i;
 
 export interface TomTomOptions {
-  apiKey: string;
   fetchImpl?: typeof fetch;
 }
 
-export function createTomTomProvider({ apiKey, fetchImpl }: TomTomOptions): TrafficProvider {
-  const key = apiKey.trim();
+export function createTomTomProvider({ fetchImpl }: TomTomOptions = {}): TrafficProvider {
   // A plain call, never `opts.fetchImpl(...)`: browsers throw "Illegal invocation" when fetch's `this` is not window.
   const doFetch: typeof fetch = fetchImpl ?? ((input, init) => fetch(input, init));
 
   async function getJson(url: URL, signal: AbortSignal | undefined): Promise<unknown> {
-    if (key === '') throw new ProviderError('missing-key', 'TomTom API key is not set');
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
       throw new ProviderError('offline', 'Device is offline');
     }
-    url.searchParams.set('key', key);
     try {
       const response = await doFetch(url.toString(), { signal });
       if (!response.ok) throw await httpError(response);
@@ -45,7 +42,10 @@ export function createTomTomProvider({ apiKey, fetchImpl }: TomTomOptions): Traf
 
   return {
     async route({ from, to, departAt, signal }: RouteRequest): Promise<RouteEstimate> {
-      const url = new URL(`${ROUTING_URL}${formatPoint(from)}:${formatPoint(to)}/json`);
+      const url = new URL(
+        `${ROUTING_URL}${formatPoint(from)}:${formatPoint(to)}/json`,
+        location.origin,
+      );
       url.searchParams.set('departAt', toRfc3339(departAt));
       url.searchParams.set('traffic', 'true');
       url.searchParams.set('computeTravelTimeFor', 'all');
@@ -57,7 +57,7 @@ export function createTomTomProvider({ apiKey, fetchImpl }: TomTomOptions): Traf
     async suggest({ query, lang, near, signal }: SuggestRequest): Promise<Place[]> {
       const trimmed = query.trim();
       if (trimmed === '') return [];
-      const url = new URL(`${SEARCH_URL}${encodeURIComponent(trimmed)}.json`);
+      const url = new URL(`${SEARCH_URL}${encodeURIComponent(trimmed)}.json`, location.origin);
       url.searchParams.set('typeahead', 'true');
       url.searchParams.set('limit', String(SUGGEST_LIMIT));
       url.searchParams.set('language', SEARCH_LANGUAGE[lang]);
@@ -78,12 +78,14 @@ function formatPoint({ lat, lon }: LatLng): string {
 async function httpError(response: Response): Promise<ProviderError> {
   const { status } = response;
   if (status === 429) return new ProviderError('rate-limited', 'TomTom HTTP 429');
+  // 401/403 means TomTom rejected the proxy's key and 503 means the proxy has none: neither is fixable by the user.
   if (status === 401 || status === 403) {
     const body = await response.text();
     return status === 403 && QUOTA_403.test(body)
       ? new ProviderError('rate-limited', 'TomTom HTTP 403 (quota)')
-      : new ProviderError('bad-key', `TomTom HTTP ${status}`);
+      : new ProviderError('unavailable', `TomTom HTTP ${status}`);
   }
+  if (status === 503) return new ProviderError('unavailable', 'Proxy HTTP 503');
   if (status === 400 || status === 404) {
     const code = detailedErrorText(await response.text());
     if (code !== undefined && NO_ROUTE_CODES.test(code)) {

@@ -46,12 +46,10 @@ export type SlotState =
   | { status: 'error'; slot: DepartureSlot; kind: ProviderErrorKind };
 
 export type ProviderErrorKind =
-  'bad-key' | 'missing-key' | 'rate-limited' | 'no-route' | 'offline' | 'aborted' | 'unknown';
+  'unavailable' | 'rate-limited' | 'no-route' | 'offline' | 'aborted' | 'unknown';
 
 export interface Settings {
   lang: Lang;
-  /** TomTom API key. Empty string means unset. */
-  apiKey: string;
 }
 
 export interface LastTrip {

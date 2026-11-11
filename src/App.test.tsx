@@ -73,7 +73,7 @@ beforeEach(() => {
   localStorage.clear();
   placesStore.set({});
   lastTripStore.set({ from: null, to: null });
-  settingsStore.set({ lang: 'en', apiKey: 'test-key' });
+  settingsStore.set({ lang: 'en' });
   mocks.estimates.mockReset().mockReturnValue(resultWith());
   mocks.search.mockReset().mockReturnValue({ suggestions: [], status: 'idle', error: null });
   mocks.online.mockReset().mockReturnValue(true);
@@ -101,9 +101,7 @@ describe('App', () => {
       'Home — 14 Rue des Lilas, Lyon',
     );
     expect(screen.getByRole('combobox', { name: 'To' })).toHaveValue('Work — Part-Dieu, Lyon');
-    expect(mocks.estimates).toHaveBeenCalledWith(
-      expect.objectContaining({ from: home, to: work, apiKey: 'test-key' }),
-    );
+    expect(mocks.estimates).toHaveBeenCalledWith(expect.objectContaining({ from: home, to: work }));
   });
 
   it('swaps origin and destination', async () => {
@@ -122,42 +120,24 @@ describe('App', () => {
     expect(lastTripStore.get().from).toEqual(work);
   });
 
-  it('shows the empty state until both places are chosen', () => {
-    mocks.estimates.mockReturnValue(
-      resultWith({
-        slots: [],
-        summary: undefined,
-        status: 'idle',
-        baseTime: null,
-        updatedAt: null,
-      }),
-    );
-    renderApp();
-    expect(
-      screen.getByText("Choose where you leave from and where you're going"),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
-  });
-
-  it('shows demo data with a clear label and a way to add the key when none is set', async () => {
-    settingsStore.set({ lang: 'en', apiKey: '' });
+  it('labels the sample data until both places are chosen', () => {
     mocks.estimates.mockReturnValue(resultWith({ isSample: true, updatedAt: null }));
     renderApp();
     expect(screen.getByText('SAMPLE DATA')).toBeInTheDocument();
-    expect(screen.getByText('Sample data. Add your TomTom key.')).toBeInTheDocument();
-    expect(screen.getByText('Sample data. Add your TomTom key.').closest('[role]')).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: 'Add key' }));
-    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeInTheDocument();
+    const notice = screen.getByText(
+      "Sample data. Choose where you leave from and where you're going.",
+    );
+    expect(notice.closest('[role]')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Add key' })).not.toBeInTheDocument();
   });
 
-  it('saves the key and language from Settings', async () => {
+  it('saves the language from Settings', async () => {
     renderApp();
     await userEvent.click(screen.getByRole('button', { name: 'Settings' }));
-    const input = screen.getByLabelText('API Key');
-    await userEvent.clear(input);
-    await userEvent.type(input, 'new-key');
+    expect(screen.queryByLabelText('API Key')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: 'Français' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
-    expect(settingsStore.get().apiKey).toBe('new-key');
+    expect(settingsStore.get().lang).toBe('fr');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -179,16 +159,17 @@ describe('App', () => {
     expect(screen.getByText('You are offline')).toBeInTheDocument();
   });
 
-  it('names a bad key and offers Settings', async () => {
-    const error: ProviderErrorKind = 'bad-key';
+  it('names an unavailable service and offers a retry', async () => {
+    const refresh = vi.fn();
+    const error: ProviderErrorKind = 'unavailable';
     mocks.estimates.mockReturnValue(
-      resultWith({ summary: undefined, slots: [], status: 'error', error }),
+      resultWith({ summary: undefined, slots: [], status: 'error', error, refresh }),
     );
     placesStore.set({ home, work });
     renderApp();
-    expect(screen.getByRole('alert')).toHaveTextContent('Invalid API key');
-    await userEvent.click(screen.getByRole('button', { name: 'Open Settings' }));
-    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('The service is unavailable');
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(refresh).toHaveBeenCalledOnce();
   });
 
   it('asks the estimates hook to refresh', async () => {

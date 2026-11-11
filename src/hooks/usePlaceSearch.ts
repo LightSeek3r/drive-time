@@ -11,7 +11,6 @@ export type PlaceSearchStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 export interface PlaceSearchInput {
   query: string;
-  apiKey: string;
   lang: Lang;
   near?: LatLng;
 }
@@ -30,20 +29,14 @@ interface SearchState {
 
 const NO_SUGGESTIONS: Place[] = [];
 const IDLE_RESULT: PlaceSearchResult = { suggestions: NO_SUGGESTIONS, status: 'idle', error: null };
-const MISSING_KEY_RESULT: PlaceSearchResult = {
-  suggestions: NO_SUGGESTIONS,
-  status: 'error',
-  error: 'missing-key',
-};
 function ready(suggestions: Place[]): PlaceSearchResult {
   return { suggestions, status: 'ready', error: null };
 }
 
 const IDLE_STATE: SearchState = { requestKey: '', result: IDLE_RESULT };
 
-export function usePlaceSearch({ query, apiKey, lang, near }: PlaceSearchInput): PlaceSearchResult {
-  const key = apiKey.trim();
-  const provider = useTrafficProvider(key);
+export function usePlaceSearch({ query, lang, near }: PlaceSearchInput): PlaceSearchResult {
+  const provider = useTrafficProvider();
   const nearPoint = useStablePoint(near);
   const trimmed = query.trim();
   const searchable = trimmed.length >= MIN_QUERY_LENGTH;
@@ -53,7 +46,7 @@ export function usePlaceSearch({ query, apiKey, lang, near }: PlaceSearchInput):
   const lastSuccess = useRef<{ requestKey: string; suggestions: Place[] } | null>(null);
 
   useEffect(() => {
-    if (!searchable || key === '') {
+    if (!searchable) {
       // Drops stale suggestions so a retyped query does not briefly show the old list.
       setState(IDLE_STATE);
       return;
@@ -90,10 +83,9 @@ export function usePlaceSearch({ query, apiKey, lang, near }: PlaceSearchInput):
       clearTimeout(timer);
       controller.abort();
     };
-  }, [searchable, key, requestKey, provider, trimmed, lang, nearPoint]);
+  }, [searchable, requestKey, provider, trimmed, lang, nearPoint]);
 
   if (!searchable) return IDLE_RESULT;
-  if (key === '') return MISSING_KEY_RESULT;
   if (state.requestKey !== requestKey) {
     // Keep the previous list on screen while the next one is debounced or in flight.
     return { suggestions: state.result.suggestions, status: 'loading', error: null };

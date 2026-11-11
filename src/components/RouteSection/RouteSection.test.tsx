@@ -46,7 +46,6 @@ function setup(props: Partial<ComponentProps<typeof RouteSection>> = {}) {
         saved={{ home, work }}
         activeField="to"
         geo={{ status: 'idle' }}
-        apiKey="k"
         lang="en"
         isSample={false}
         {...handlers}

@@ -56,8 +56,7 @@ export function validateSavedPlaces(raw: unknown): SavedPlaces | null {
 export function validateSettings(raw: unknown): Settings | null {
   if (!isRecord(raw)) return null;
   if (raw.lang !== 'en' && raw.lang !== 'fr') return null;
-  if (typeof raw.apiKey !== 'string') return null;
-  return { lang: raw.lang, apiKey: raw.apiKey };
+  return { lang: raw.lang };
 }
 
 /** `undefined` signals an invalid value, so it stays distinct from a legitimate `null`. */

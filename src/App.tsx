@@ -3,7 +3,6 @@ import styles from './App.module.css';
 import { AnswerPanel } from './components/AnswerPanel/AnswerPanel';
 import { Banner } from './components/Banner/Banner';
 import { BrandBand } from './components/BrandBand/BrandBand';
-import { EmptyState } from './components/EmptyState/EmptyState';
 import { ErrorBanner } from './components/ErrorBanner/ErrorBanner';
 import { ResultsTable } from './components/ResultsTable/ResultsTable';
 import { buildRows } from './components/ResultsTable/rows';
@@ -52,7 +51,7 @@ export default function App() {
   const to = trip.to ?? places.work ?? null;
   const activePlace = activeField === 'from' ? from : to;
 
-  const estimates = useDepartureEstimates({ from, to, start, apiKey: settings.apiKey });
+  const estimates = useDepartureEstimates({ from, to, start });
   const { isSample, summary, error } = estimates;
 
   const pick = (field: RouteFieldName, place: Place) => {
@@ -70,8 +69,6 @@ export default function App() {
   }, [geolocation.state, setTrip, t, to]);
 
   const openSettings = () => setSettingsOpen(true);
-  const hasRoute = from !== null && to !== null;
-  const showEmpty = !isSample && !hasRoute;
 
   const slots = estimates.slots.length > 0 ? estimates.slots : loadingSlots(start, now);
   const rows = buildRows(slots, summary, now);
@@ -102,11 +99,7 @@ export default function App() {
             </Banner>
           )}
           {isSample && (
-            <Banner
-              tone="info"
-              icon="pin"
-              action={{ label: t('onboarding_action'), onClick: openSettings }}
-            >
+            <Banner tone="info" icon="pin">
               {t('onboarding_notice')}
             </Banner>
           )}
@@ -120,7 +113,6 @@ export default function App() {
               saved={places}
               activeField={activeField}
               geo={geolocation.state}
-              apiKey={settings.apiKey}
               lang={lang}
               isSample={isSample}
               onActivate={setActiveField}
@@ -133,21 +125,13 @@ export default function App() {
               onSetUp={setSetUpKey}
             />
             <WhenSection start={start} now={now} onChange={setStart} />
-            {!showEmpty && error !== null && (
-              <ErrorBanner kind={error} onOpenSettings={openSettings} onRetry={estimates.refresh} />
-            )}
-            {!showEmpty && <div className={styles.answerSlot}>{answer}</div>}
+            {error !== null && <ErrorBanner kind={error} onRetry={estimates.refresh} />}
+            <div className={styles.answerSlot}>{answer}</div>
           </div>
 
           <div className={styles.results}>
-            {showEmpty ? (
-              <EmptyState />
-            ) : (
-              <>
-                <ResultsTable rows={rows} drawKey={drawKey} reducedMotion={reducedMotion} />
-                <StatusFooter updatedAt={estimates.updatedAt} onRefresh={estimates.refresh} />
-              </>
-            )}
+            <ResultsTable rows={rows} drawKey={drawKey} reducedMotion={reducedMotion} />
+            <StatusFooter updatedAt={estimates.updatedAt} onRefresh={estimates.refresh} />
           </div>
         </main>
       </div>
@@ -163,7 +147,6 @@ export default function App() {
       />
       <SetPlaceDialog
         target={setUpKey}
-        apiKey={settings.apiKey}
         lang={lang}
         near={activePlace?.position}
         onSave={(key, place) => {

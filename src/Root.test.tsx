@@ -11,7 +11,7 @@ describe('Root', () => {
   });
 
   it('keeps the document language in step with the saved setting', () => {
-    settingsStore.set({ lang: 'fr', apiKey: '' });
+    settingsStore.set({ lang: 'fr' });
     render(<Root />);
     expect(screen.getByText('app')).toBeInTheDocument();
     expect(document.documentElement.lang).toBe('fr');

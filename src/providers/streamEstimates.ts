@@ -19,11 +19,7 @@ const DEFAULT_RATE_LIMIT_BACKOFF_MS: readonly number[] = [1_000, 2_000];
  * Errors that will fail every remaining slot the same way; retrying them only burns quota.
  * `rate-limited` is fatal only once its backoff retries are exhausted.
  */
-const FATAL_KINDS: ReadonlySet<ProviderErrorKind> = new Set([
-  'bad-key',
-  'missing-key',
-  'rate-limited',
-]);
+const FATAL_KINDS: ReadonlySet<ProviderErrorKind> = new Set(['unavailable', 'rate-limited']);
 
 export interface EstimateCache {
   get(key: string, nowMs: number): RouteEstimate | undefined;

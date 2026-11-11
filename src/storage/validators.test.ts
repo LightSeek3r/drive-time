@@ -72,16 +72,18 @@ describe('validateSavedPlaces', () => {
 
 describe('validateSettings', () => {
   it('accepts valid settings', () => {
-    expect(validateSettings({ lang: 'fr', apiKey: 'abc' })).toEqual({ lang: 'fr', apiKey: 'abc' });
-    expect(validateSettings({ lang: 'en', apiKey: '' })).toEqual({ lang: 'en', apiKey: '' });
+    expect(validateSettings({ lang: 'fr' })).toEqual({ lang: 'fr' });
+    expect(validateSettings({ lang: 'en' })).toEqual({ lang: 'en' });
+  });
+
+  it('drops the API key that earlier versions stored', () => {
+    expect(validateSettings({ lang: 'fr', apiKey: 'abc' })).toEqual({ lang: 'fr' });
   });
 
   it.each([
     ['null', null],
-    ['an unsupported language', { lang: 'de', apiKey: '' }],
-    ['a missing language', { apiKey: '' }],
-    ['a missing key', { lang: 'en' }],
-    ['a non-string key', { lang: 'en', apiKey: 1 }],
+    ['an unsupported language', { lang: 'de' }],
+    ['a missing language', {}],
     ['an array', ['en', '']],
   ])('rejects %s', (_name, raw) => {
     expect(validateSettings(raw)).toBeNull();

@@ -16,7 +16,6 @@ interface RouteSectionProps {
   saved: SavedPlaces;
   activeField: RouteFieldName;
   geo: GeoState;
-  apiKey: string;
   lang: Lang;
   /** Demo data is showing: empty fields read as a labelled sample route. */
   isSample: boolean;
@@ -55,7 +54,6 @@ export function RouteSection({
   saved,
   activeField,
   geo,
-  apiKey,
   lang,
   isSample,
   onActivate,
@@ -88,7 +86,6 @@ export function RouteSection({
             placeholder={isSample ? t('sample_home') : undefined}
             value={from}
             tag={tagOf(from)}
-            apiKey={apiKey}
             lang={lang}
             near={to?.position}
             onFocus={() => onActivate('from')}
@@ -116,7 +113,6 @@ export function RouteSection({
             placeholder={isSample ? t('sample_work') : undefined}
             value={to}
             tag={tagOf(to)}
-            apiKey={apiKey}
             lang={lang}
             near={from?.position}
             onFocus={() => onActivate('to')}

@@ -20,18 +20,17 @@ export interface DepartureEstimatesInput {
   from: Place | null;
   to: Place | null;
   start: StartTime;
-  apiKey: string;
 }
 
 export interface DepartureEstimatesResult {
-  /** 9 entries once from, to are set (or sample mode); [] otherwise. Order = departure order. */
+  /** 9 entries: real once from and to are set, the built-in sample until then. Order = departure order. */
   slots: SlotState[];
   /** summarise() over the READY estimates; undefined while idle/loading or when nothing is ready. */
   summary: DepartureSummary | undefined;
   status: EstimatesStatus;
-  /** Set when a fatal error stopped the run (bad-key, missing-key, rate-limited, offline) or every slot failed. */
+  /** Set when a fatal error stopped the run (unavailable, rate-limited, offline) or every slot failed. */
   error: ProviderErrorKind | null;
-  /** true when apiKey is empty and the data is the built-in sample, so the UI labels it SAMPLE DATA. */
+  /** true while from or to is unset and the data is the built-in sample, so the UI labels it SAMPLE DATA. */
   isSample: boolean;
   /** The instant the first slot departs (resolveBase of `start` at the last run). */
   baseTime: Date | null;
@@ -52,11 +51,7 @@ interface RunState {
 const EMPTY_RUN: RunState = { runKey: '', slots: [], baseTime: null, updatedAt: null };
 
 // streamEstimates stops scheduling on these and stamps every remaining slot with the same kind.
-const FATAL_KINDS: ReadonlySet<ProviderErrorKind> = new Set([
-  'bad-key',
-  'missing-key',
-  'rate-limited',
-]);
+const FATAL_KINDS: ReadonlySet<ProviderErrorKind> = new Set(['unavailable', 'rate-limited']);
 
 function slotOf(state: SlotState): DepartureSlot {
   return state.status === 'ready' ? state.estimate.slot : state.slot;
@@ -111,14 +106,13 @@ export function useDepartureEstimates({
   from,
   to,
   start,
-  apiKey,
 }: DepartureEstimatesInput): DepartureEstimatesResult {
-  const key = apiKey.trim();
-  const isSample = key === '';
   const online = useOnline();
-  const provider = useTrafficProvider(key);
+  const provider = useTrafficProvider();
   const fromPoint = useStablePoint(from?.position);
   const toPoint = useStablePoint(to?.position);
+  const hasPlaces = fromPoint !== null && toPoint !== null;
+  const isSample = !hasPlaces;
   const startMs = start.mode === 'at' ? start.at.getTime() : null;
   const stableStart = useMemo<StartTime>(
     () => (startMs === null ? { mode: 'now' } : { mode: 'at', at: new Date(startMs) }),
@@ -133,7 +127,7 @@ export function useDepartureEstimates({
   const runKey = `${pointKey(fromPoint)}>${pointKey(toPoint)}@${startMs ?? 'now'}#${refreshCount}`;
 
   useEffect(() => {
-    if (isSample || fromPoint === null || toPoint === null || !online) return;
+    if (fromPoint === null || toPoint === null || !online) return;
 
     const controller = new AbortController();
     const baseTime = resolveBase(stableStart, new Date());
@@ -166,7 +160,7 @@ export function useDepartureEstimates({
     });
 
     return () => controller.abort();
-  }, [isSample, fromPoint, toPoint, online, stableStart, provider, runKey, refreshCount]);
+  }, [fromPoint, toPoint, online, stableStart, provider, runKey, refreshCount]);
 
   // Sample data needs no network, so it is derived (never an empty first frame) instead of run in the effect.
   // refreshCount is a dependency only so Refresh re-resolves a 'now' base.
@@ -175,11 +169,10 @@ export function useDepartureEstimates({
     [isSample, stableStart, refreshCount],
   );
 
-  const hasPlaces = fromPoint !== null && toPoint !== null;
-  const offline = !isSample && hasPlaces && !online;
+  const offline = hasPlaces && !online;
   // Inputs changed but the effect has not seeded the new run yet: do not flash the previous trip.
-  const pending = !isSample && hasPlaces && online && run.runKey !== runKey;
-  const source = isSample ? sample : !hasPlaces || pending ? EMPTY_RUN : run;
+  const pending = hasPlaces && online && run.runKey !== runKey;
+  const source = isSample ? sample : pending ? EMPTY_RUN : run;
 
   const view = useMemo(() => {
     const slots = offline ? source.slots.map(markLoadingOffline) : source.slots;

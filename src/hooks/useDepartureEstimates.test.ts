@@ -27,7 +27,6 @@ const work: Place = {
 const START_AT = new Date('2099-11-10T08:00:00+01:00');
 const at: StartTime = { mode: 'at', at: START_AT } as StartTime;
 const now: StartTime = { mode: 'now' };
-const KEY = 'secret';
 
 interface ActiveRun {
   options: StreamEstimatesOptions;
@@ -104,7 +103,7 @@ describe('deriveStatus / deriveError', () => {
 
   it('is loading while any slot is loading, even after a fatal error', () => {
     expect(deriveStatus([okay(0), loading(1)])).toBe('loading');
-    expect(deriveError([errored(0, 'bad-key'), loading(1)])).toBe('bad-key');
+    expect(deriveError([errored(0, 'unavailable'), loading(1)])).toBe('unavailable');
   });
 
   it('is done when settled with at least one ready slot and no fatal kind', () => {
@@ -120,26 +119,12 @@ describe('deriveStatus / deriveError', () => {
 });
 
 describe('useDepartureEstimates', () => {
-  it('stays idle without network when from or to is missing', () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: null, start: at, apiKey: KEY }),
-    );
-
-    expect(stream).not.toHaveBeenCalled();
-    expect(result.current).toMatchObject({
-      slots: [],
-      status: 'idle',
-      summary: undefined,
-      error: null,
-      isSample: false,
-      baseTime: null,
-    });
-  });
-
-  it('serves sample data without network when apiKey is empty, even with no places', () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: null, to: null, start: at, apiKey: '  ' }),
-    );
+  it.each([
+    ['neither place', null, null],
+    ['only from', home, null],
+    ['only to', null, work],
+  ])('serves sample data without network when %s is set', (_label, from, to) => {
+    const { result } = renderHook(() => useDepartureEstimates({ from, to, start: at }));
 
     expect(stream).not.toHaveBeenCalled();
     expect(result.current.isSample).toBe(true);
@@ -152,7 +137,7 @@ describe('useDepartureEstimates', () => {
 
   it('keeps sample data referentially stable across rerenders', () => {
     const { result, rerender } = renderHook(() =>
-      useDepartureEstimates({ from: null, to: null, start: now, apiKey: '' }),
+      useDepartureEstimates({ from: null, to: null, start: now }),
     );
     const { slots, baseTime } = result.current;
 
@@ -163,9 +148,7 @@ describe('useDepartureEstimates', () => {
   });
 
   it('seeds nine loading slots, streams results in, then reports done with a summary', async () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
 
     expect(stream).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe('loading');
@@ -191,9 +174,7 @@ describe('useDepartureEstimates', () => {
   });
 
   it('passes rounded positions to the stream and bypasses the cache only after refresh', () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
     expect(lastRun().options).toMatchObject({
       from: { lat: 45.76, lon: 4.83 },
       to: { lat: 45.7606, lon: 4.8595 },
@@ -207,24 +188,20 @@ describe('useDepartureEstimates', () => {
   });
 
   it('maps a fatal kind to error and status', () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
     const { options } = lastRun();
 
     act(() => {
-      for (let i = 0; i < 9; i += 1) options.onSlot(failed(options, i, 'bad-key'));
+      for (let i = 0; i < 9; i += 1) options.onSlot(failed(options, i, 'unavailable'));
     });
 
     expect(result.current.status).toBe('error');
-    expect(result.current.error).toBe('bad-key');
+    expect(result.current.error).toBe('unavailable');
     expect(result.current.summary).toBeUndefined();
   });
 
   it('reports no-route only when every slot failed that way', () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
     const { options } = lastRun();
 
     act(() => {
@@ -241,7 +218,7 @@ describe('useDepartureEstimates', () => {
 
   it('does not rerun for a new Place object at the same position', () => {
     const { rerender } = renderHook(
-      ({ from }) => useDepartureEstimates({ from, to: work, start: at, apiKey: KEY }),
+      ({ from }) => useDepartureEstimates({ from, to: work, start: at }),
       { initialProps: { from: home } },
     );
 
@@ -253,7 +230,7 @@ describe('useDepartureEstimates', () => {
 
   it('aborts the previous run and drops its stale state when the destination changes', () => {
     const { result, rerender } = renderHook(
-      ({ to }) => useDepartureEstimates({ from: home, to, start: at, apiKey: KEY }),
+      ({ to }) => useDepartureEstimates({ from: home, to, start: at }),
       { initialProps: { to: work } },
     );
     const first = lastRun();
@@ -271,7 +248,7 @@ describe('useDepartureEstimates', () => {
 
   it('does not stamp updatedAt when an aborted run finishes late', async () => {
     const { result, rerender } = renderHook(
-      ({ to }) => useDepartureEstimates({ from: home, to, start: at, apiKey: KEY }),
+      ({ to }) => useDepartureEstimates({ from: home, to, start: at }),
       { initialProps: { to: work } },
     );
     const first = lastRun();
@@ -286,7 +263,7 @@ describe('useDepartureEstimates', () => {
 
   it('reruns when the chosen start time changes', () => {
     const { rerender } = renderHook(
-      ({ start }) => useDepartureEstimates({ from: home, to: work, start, apiKey: KEY }),
+      ({ start }) => useDepartureEstimates({ from: home, to: work, start }),
       { initialProps: { start: at } },
     );
 
@@ -300,7 +277,7 @@ describe('useDepartureEstimates', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-10T08:00:00Z'));
     const { result, rerender } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: { mode: 'now' }, apiKey: KEY }),
+      useDepartureEstimates({ from: home, to: work, start: { mode: 'now' } }),
     );
     const base = result.current.baseTime;
 
@@ -317,7 +294,7 @@ describe('useDepartureEstimates', () => {
 
   it('aborts the run on unmount', () => {
     const { unmount } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
+      useDepartureEstimates({ from: home, to: work, start: at }),
     );
     const { options } = lastRun();
 
@@ -328,9 +305,7 @@ describe('useDepartureEstimates', () => {
 
   it('does not start offline, then runs when the connection returns', () => {
     setOnline(false);
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
 
     expect(stream).not.toHaveBeenCalled();
     expect(result.current).toMatchObject({ slots: [], status: 'error', error: 'offline' });
@@ -343,9 +318,7 @@ describe('useDepartureEstimates', () => {
   });
 
   it('keeps ready results and fails the unfinished ones when the connection drops mid-run', () => {
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
     const { options } = lastRun();
     act(() => {
       options.onSlot(ready(options, 0));
@@ -364,9 +337,7 @@ describe('useDepartureEstimates', () => {
 
   it('keeps sample data while offline', () => {
     setOnline(false);
-    const { result } = renderHook(() =>
-      useDepartureEstimates({ from: null, to: null, start: at, apiKey: '' }),
-    );
+    const { result } = renderHook(() => useDepartureEstimates({ from: null, to: null, start: at }));
 
     expect(result.current.status).toBe('done');
     expect(result.current.error).toBeNull();
@@ -376,7 +347,7 @@ describe('useDepartureEstimates', () => {
 describe('useDepartureEstimates under StrictMode', () => {
   it('aborts the mount-time run and completes with the surviving one', async () => {
     const { result } = renderHook(
-      () => useDepartureEstimates({ from: home, to: work, start: at, apiKey: KEY }),
+      () => useDepartureEstimates({ from: home, to: work, start: at }),
       { wrapper: StrictMode },
     );
 

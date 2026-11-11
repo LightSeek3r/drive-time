@@ -3,8 +3,7 @@ import type { Settings } from '../domain/types';
 import { settingsStore } from '../storage/stores';
 
 function update(patch: Partial<Settings>): void {
-  const next = { ...settingsStore.get(), ...patch };
-  settingsStore.set({ ...next, apiKey: next.apiKey.trim() });
+  settingsStore.set({ ...settingsStore.get(), ...patch });
 }
 
 export function useSettings(): {

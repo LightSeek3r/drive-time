@@ -18,7 +18,7 @@ export const placesStore = createLocalStore<SavedPlaces>({
 export const settingsStore = createLocalStore<Settings>({
   key: 'ht:v1:settings',
   version: 1,
-  defaults: () => ({ lang: detectLang(), apiKey: '' }),
+  defaults: () => ({ lang: detectLang() }),
   validate: validateSettings,
 });
 

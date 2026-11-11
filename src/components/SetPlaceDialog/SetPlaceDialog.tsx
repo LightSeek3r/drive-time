@@ -10,7 +10,6 @@ import styles from './SetPlaceDialog.module.css';
 interface SetPlaceDialogProps {
   /** Which saved place is being set; null keeps the dialog closed. */
   target: SavedPlaceKey | null;
-  apiKey: string;
   lang: Lang;
   near?: LatLng;
   onSave: (key: SavedPlaceKey, place: Place) => void;
@@ -22,7 +21,7 @@ interface FormProps extends Omit<SetPlaceDialogProps, 'target'> {
   titleId: string;
 }
 
-function SetPlaceForm({ target, titleId, apiKey, lang, near, onSave, onClose }: FormProps) {
+function SetPlaceForm({ target, titleId, lang, near, onSave, onClose }: FormProps) {
   const t = useT();
   const [chosen, setChosen] = useState<Place | null>(null);
   const title = t('set_place', { name: t(target) });
@@ -48,7 +47,6 @@ function SetPlaceForm({ target, titleId, apiKey, lang, near, onSave, onClose }: 
       <PlaceSearchField
         label={t(target)}
         value={chosen}
-        apiKey={apiKey}
         lang={lang}
         near={near}
         onSelect={setChosen}

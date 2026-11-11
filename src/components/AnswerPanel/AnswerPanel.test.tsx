@@ -36,11 +36,11 @@ describe('AnswerPanel', () => {
     );
     const headline = screen.getByRole('heading', { level: 2 });
     expect(headline).toHaveTextContent(/^Leave .*9[:.]45/);
-    expect(screen.getByText(/arrive .*10[:.]12 — .*faster than/)).toHaveTextContent(
-      /27 min, arrive .*10[:.]12 — 6 min faster than .*7[:.]45/,
+    expect(screen.getByText(/arrive .*10[:.]12(?:\s[AP]M)? — .*faster than/)).toHaveTextContent(
+      /27 min, arrive .*10[:.]12(?:\s[AP]M)? — 6 min faster than .*7[:.]45/,
     );
     expect(screen.getByText(/less than the/)).toHaveTextContent(
-      /15 min less than the .*8[:.]15 peak/,
+      /15 min less than the .*8[:.]15(?:\s[AP]M)? peak/,
     );
   });
 
@@ -123,7 +123,9 @@ describe('AnswerPanel announcement', () => {
   it('speaks the headline and trip once, in one status region', () => {
     render(view(curve));
     const status = screen.getByRole('status');
-    expect(status).toHaveTextContent(/^Leave .*9[:.]45. 27 min, arrive .*10[:.]12$/);
+    expect(status).toHaveTextContent(
+      /^Leave .*9[:.]45(?:\s[AP]M)?\. 27 min, arrive .*10[:.]12(?:\s[AP]M)?$/,
+    );
     expect(status).toHaveClass('sr-only');
   });
 

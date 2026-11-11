@@ -17,8 +17,6 @@ import searchEmpty from './__fixtures__/search-empty.json';
 import searchMalformed from './__fixtures__/search-malformed.json';
 import searchSuccess from './__fixtures__/search-success.json';
 
-const API_KEY = 'secret-key-123';
-
 const routeRequest: RouteRequest = {
   from: { lat: 45.76, lon: 4.83 },
   to: { lat: 45.7606, lon: 4.8595 },
@@ -62,7 +60,7 @@ afterEach(() => {
 describe('createTomTomProvider().route', () => {
   it('maps a successful route summary', async () => {
     const { fetchImpl } = fakeFetch(() => json(routeSuccess));
-    const provider = createTomTomProvider({ apiKey: API_KEY, fetchImpl });
+    const provider = createTomTomProvider({ fetchImpl });
     await expect(provider.route(routeRequest)).resolves.toEqual({
       durationSec: 1563,
       freeFlowSec: 1180,
@@ -72,7 +70,7 @@ describe('createTomTomProvider().route', () => {
 
   it('falls back to durationSec when noTrafficTravelTimeInSeconds is absent', async () => {
     const { fetchImpl } = fakeFetch(() => json(routeNoFreeFlow));
-    const provider = createTomTomProvider({ apiKey: API_KEY, fetchImpl });
+    const provider = createTomTomProvider({ fetchImpl });
     await expect(provider.route(routeRequest)).resolves.toEqual({
       durationSec: 120,
       freeFlowSec: 120,
@@ -82,19 +80,18 @@ describe('createTomTomProvider().route', () => {
 
   it('builds the documented URL with departAt percent-encoded, offset "+" as %2B', async () => {
     const { fetchImpl, urls } = fakeFetch(() => json(routeSuccess));
-    await createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route(routeRequest);
+    await createTomTomProvider({ fetchImpl }).route(routeRequest);
 
     expect(urls).toHaveLength(1);
     const raw = urls[0]!;
     expect(raw).toContain('departAt=2026-11-10T08%3A15%3A00%2B01%3A00');
     expect(raw).not.toContain('+01');
     const url = new URL(raw);
-    expect(url.origin).toBe('https://api.tomtom.com');
+    expect(url.origin).toBe(location.origin);
     expect(url.pathname).toBe(
-      '/routing/1/calculateRoute/45.760000,4.830000:45.760600,4.859500/json',
+      '/api/routing/1/calculateRoute/45.760000,4.830000:45.760600,4.859500/json',
     );
     expect(Object.fromEntries(url.searchParams)).toEqual({
-      key: API_KEY,
       departAt: '2026-11-10T08:15:00+01:00',
       traffic: 'true',
       computeTravelTimeFor: 'all',
@@ -105,7 +102,7 @@ describe('createTomTomProvider().route', () => {
 
   it('sends the departAt offset in force at that instant (summer time)', async () => {
     const { fetchImpl, urls } = fakeFetch(() => json(routeSuccess));
-    await createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route({
+    await createTomTomProvider({ fetchImpl }).route({
       ...routeRequest,
       departAt: new Date('2026-10-25T00:45:00Z'),
     });
@@ -119,7 +116,7 @@ describe('createTomTomProvider().route', () => {
       return json(routeSuccess);
     };
     const controller = new AbortController();
-    await createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route({
+    await createTomTomProvider({ fetchImpl }).route({
       ...routeRequest,
       signal: controller.signal,
     });
@@ -127,9 +124,14 @@ describe('createTomTomProvider().route', () => {
   });
 
   it.each([
-    ['401 (observed live)', () => json(error401, 401), 'bad-key'],
-    ['403 not authorized', () => xml(error403, 403), 'bad-key'],
+    ['401 (observed live)', () => json(error401, 401), 'unavailable'],
+    ['403 not authorized', () => xml(error403, 403), 'unavailable'],
     ['403 quota exceeded', () => xml(error403Quota, 403), 'rate-limited'],
+    [
+      '503 from the proxy (no key configured)',
+      () => json({ error: 'proxy-not-configured' }, 503),
+      'unavailable',
+    ],
     ['429', () => xml(error429, 429), 'rate-limited'],
     ['400 NO_ROUTE_FOUND', () => json(routeNoRoute, 400), 'no-route'],
     ['400 MAP_MATCHING_FAILURE', () => json(routeMapMatching, 400), 'no-route'],
@@ -141,29 +143,22 @@ describe('createTomTomProvider().route', () => {
     ['invalid JSON', () => new Response('{"routes": [', { status: 200 }), 'unknown'],
   ] as const)('maps %s to %s', async (_label, respond, kind) => {
     const { fetchImpl } = fakeFetch(respond);
-    const error = await rejection(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route(routeRequest),
-    );
+    const error = await rejection(createTomTomProvider({ fetchImpl }).route(routeRequest));
     expect(error.kind).toBe(kind);
-    expect(error.message).not.toContain(API_KEY);
   });
 
   it('maps a fetch TypeError (network failure) to offline', async () => {
     const fetchImpl: typeof fetch = async () => {
       throw new TypeError('Failed to fetch');
     };
-    const error = await rejection(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route(routeRequest),
-    );
+    const error = await rejection(createTomTomProvider({ fetchImpl }).route(routeRequest));
     expect(error.kind).toBe('offline');
   });
 
   it('reports offline without a request when the browser says it is offline', async () => {
     vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
     const { fetchImpl, urls } = fakeFetch(() => json(routeSuccess));
-    const error = await rejection(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route(routeRequest),
-    );
+    const error = await rejection(createTomTomProvider({ fetchImpl }).route(routeRequest));
     expect(error.kind).toBe('offline');
     expect(urls).toEqual([]);
   });
@@ -176,30 +171,19 @@ describe('createTomTomProvider().route', () => {
         );
       });
     const controller = new AbortController();
-    const pending = createTomTomProvider({ apiKey: API_KEY, fetchImpl }).route({
+    const pending = createTomTomProvider({ fetchImpl }).route({
       ...routeRequest,
       signal: controller.signal,
     });
     controller.abort();
     expect((await rejection(pending)).kind).toBe('aborted');
   });
-
-  it('rejects an empty or blank key with missing-key and makes no request', async () => {
-    const { fetchImpl, urls } = fakeFetch(() => json(routeSuccess));
-    for (const apiKey of ['', '   ']) {
-      const error = await rejection(
-        createTomTomProvider({ apiKey, fetchImpl }).route(routeRequest),
-      );
-      expect(error.kind).toBe('missing-key');
-    }
-    expect(urls).toEqual([]);
-  });
 });
 
 describe('createTomTomProvider().suggest', () => {
   it('maps search results to places', async () => {
     const { fetchImpl } = fakeFetch(() => json(searchSuccess));
-    const places = await createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({
+    const places = await createTomTomProvider({ fetchImpl }).suggest({
       query: 'part dieu',
       lang: 'fr',
     });
@@ -228,22 +212,21 @@ describe('createTomTomProvider().suggest', () => {
   it('returns an empty list for no results', async () => {
     const { fetchImpl } = fakeFetch(() => json(searchEmpty));
     await expect(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({ query: 'zzqxq', lang: 'en' }),
+      createTomTomProvider({ fetchImpl }).suggest({ query: 'zzqxq', lang: 'en' }),
     ).resolves.toEqual([]);
   });
 
   it('builds a typeahead search URL with language and location bias', async () => {
     const { fetchImpl, urls } = fakeFetch(() => json(searchEmpty));
-    await createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({
+    await createTomTomProvider({ fetchImpl }).suggest({
       query: ' Rue de la Paix / 12 ',
       lang: 'en',
       near: { lat: 45.76, lon: 4.83 },
     });
     const url = new URL(urls[0]!);
-    expect(url.origin).toBe('https://api.tomtom.com');
-    expect(url.pathname).toBe('/search/2/search/Rue%20de%20la%20Paix%20%2F%2012.json');
+    expect(url.origin).toBe(location.origin);
+    expect(url.pathname).toBe('/api/search/2/search/Rue%20de%20la%20Paix%20%2F%2012.json');
     expect(Object.fromEntries(url.searchParams)).toEqual({
-      key: API_KEY,
       typeahead: 'true',
       limit: '6',
       language: 'en-GB',
@@ -254,7 +237,7 @@ describe('createTomTomProvider().suggest', () => {
 
   it('uses fr-FR and no bias when none is given', async () => {
     const { fetchImpl, urls } = fakeFetch(() => json(searchEmpty));
-    await createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({
+    await createTomTomProvider({ fetchImpl }).suggest({
       query: 'lyon',
       lang: 'fr',
     });
@@ -266,7 +249,7 @@ describe('createTomTomProvider().suggest', () => {
   it('skips the request for a blank query', async () => {
     const { fetchImpl, urls } = fakeFetch(() => json(searchEmpty));
     await expect(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({ query: '  ', lang: 'en' }),
+      createTomTomProvider({ fetchImpl }).suggest({ query: '  ', lang: 'en' }),
     ).resolves.toEqual([]);
     expect(urls).toEqual([]);
   });
@@ -274,7 +257,7 @@ describe('createTomTomProvider().suggest', () => {
   it('rejects a malformed result with unknown', async () => {
     const { fetchImpl } = fakeFetch(() => json(searchMalformed));
     const error = await rejection(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({ query: 'lyon', lang: 'en' }),
+      createTomTomProvider({ fetchImpl }).suggest({ query: 'lyon', lang: 'en' }),
     );
     expect(error.kind).toBe('unknown');
   });
@@ -282,9 +265,8 @@ describe('createTomTomProvider().suggest', () => {
   it('maps 401 to bad-key without leaking the key', async () => {
     const { fetchImpl } = fakeFetch(() => json(error401, 401));
     const error = await rejection(
-      createTomTomProvider({ apiKey: API_KEY, fetchImpl }).suggest({ query: 'lyon', lang: 'en' }),
+      createTomTomProvider({ fetchImpl }).suggest({ query: 'lyon', lang: 'en' }),
     );
-    expect(error.kind).toBe('bad-key');
-    expect(error.message).not.toContain(API_KEY);
+    expect(error.kind).toBe('unavailable');
   });
 });

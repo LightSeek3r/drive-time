@@ -2,15 +2,17 @@
 
 When should I leave? Pick where you start and where you are going, and see the car travel time for nine departure times side by side: your start time, then every 15 minutes for two hours. The fastest one is called out.
 
-Installable PWA, English and French, no backend. Home and Work, your API key and your last trip are stored in the browser only.
+Installable PWA, English and French. Home and Work and your last trip are stored in the browser only. The app shows sample data until you choose a start and a destination.
 
 ## How it works
 
 Travel times come from the [TomTom Routing API](https://developer.tomtom.com/) with `departAt`, which blends typical traffic for that weekday and time of day with live traffic when the departure is close. Waze has no public API, and no routing service gives predictive traffic without a key.
 
+The TomTom key never reaches the browser. The app calls its own `/api/*` routes, and a small Worker (`worker/`) adds the key as a secret before forwarding to TomTom. It only forwards the two calls the app makes, accepts same-origin browser requests, and rate limits per IP (60 requests per minute), so the key cannot be spent on anything else.
+
 1. Create a free TomTom key (20,000 routing and 20,000 geocoding requests per month, no card required).
-2. Open Settings in the app and paste the key. Restrict it to your site's domain in the TomTom developer portal, because a key used from a browser is visible to anyone who opens the network tab.
-3. Without a key the app shows clearly labelled sample data.
+2. Store it as a Worker secret named `TOMTOM_API_KEY` (dashboard: Worker, Settings, Variables and Secrets, type Secret; or `npx wrangler secret put TOMTOM_API_KEY`). Without it `/api/*` answers 503 and the app shows a "service unavailable" message.
+3. For local development put `TOMTOM_API_KEY=...` in a gitignored `.dev.vars` file and run `npx wrangler dev` after `npm run build`; `npm run dev` serves the UI only.
 
 Each refresh makes about 9 routing requests. Results are cached for 5 minutes and refreshing is manual.
 
@@ -18,7 +20,7 @@ Each refresh makes about 9 routing requests. Results are cached for 5 minutes an
 
 ```sh
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5173 (UI only, /api/* is not served)
 npm test           # Vitest
 npm run typecheck
 npm run build      # production build and service worker
@@ -38,12 +40,13 @@ Push-to-deploy uses Workers Builds. In the dashboard: Workers & Pages, Create ap
 - Deploy command: `npx wrangler deploy`
 - Production branch: `main`
 
-The Worker name in the dashboard must stay `home-timer` to match `wrangler.jsonc`. Manual deploy: `npm run deploy`.
+The Worker name in the dashboard must stay `home-timer` to match `wrangler.jsonc`. `wrangler.jsonc` also declares the rate limit binding; if its `namespace_id` is already used by another Worker in the account, change it. Manual deploy: `npm run deploy`.
 
 ## Layout
 
 - `src/domain` pure logic: departure slots, summary, RFC 3339 times, sample data
-- `src/providers` the `TrafficProvider` seam, the TomTom client, and the throttled, cached estimate stream
+- `src/providers` the `TrafficProvider` seam, the TomTom client (calls `/api/*`), and the throttled, cached estimate stream
+- `worker` the Cloudflare Worker that proxies `/api/*` to TomTom with the secret key
 - `src/storage`, `src/hooks` versioned localStorage stores and React hooks
 - `src/components`, `src/styles` the UI and design tokens (night theme with automatic light theme)
 - `src/i18n` English and French strings; a test keeps the two in step

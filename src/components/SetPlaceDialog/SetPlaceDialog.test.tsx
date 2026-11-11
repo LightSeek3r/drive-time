@@ -24,7 +24,7 @@ function setup(target: 'home' | 'work' | null = 'work') {
   const onClose = vi.fn();
   render(
     <I18nProvider lang="en">
-      <SetPlaceDialog target={target} apiKey="k" lang="en" onSave={onSave} onClose={onClose} />
+      <SetPlaceDialog target={target} lang="en" onSave={onSave} onClose={onClose} />
     </I18nProvider>,
   );
   return { onSave, onClose };

@@ -43,11 +43,12 @@ export default defineConfig(
         },
         workbox: {
           navigateFallback: 'index.html',
+          navigateFallbackDenylist: [/^\/api\//],
           // woff2 is outside the default glob; without it the app shell falls back to a system font offline.
           globPatterns: ['**/*.{js,css,html,woff2,svg,png,webmanifest}'],
           runtimeCaching: [
             {
-              urlPattern: /^https:\/\/api\.tomtom\.com\//,
+              urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith('/api/'),
               handler: 'NetworkOnly',
             },
           ],

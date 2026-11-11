@@ -21,19 +21,16 @@ const lyon: Place = {
   address: 'Lyon, France',
   position: { lat: 45.76, lon: 4.83 },
 };
-const KEY = 'secret';
 
 interface Props {
   query: string;
-  apiKey?: string;
   lang?: Lang;
 }
 
 function render(initial: Props) {
-  return renderHook(
-    ({ query, apiKey = KEY, lang = 'en' }: Props) => usePlaceSearch({ query, apiKey, lang }),
-    { initialProps: initial },
-  );
+  return renderHook(({ query, lang = 'en' }: Props) => usePlaceSearch({ query, lang }), {
+    initialProps: initial,
+  });
 }
 
 async function advance(ms: number) {
@@ -115,22 +112,13 @@ describe('usePlaceSearch', () => {
     expect(result.current).toMatchObject({ suggestions: [lyon], status: 'loading' });
   });
 
-  it('reports missing-key without touching the network', async () => {
-    const { result } = render({ query: 'lyon', apiKey: '' });
-
-    await advance(1000);
-
-    expect(suggest).not.toHaveBeenCalled();
-    expect(result.current).toEqual({ suggestions: [], status: 'error', error: 'missing-key' });
-  });
-
   it('surfaces provider errors', async () => {
-    suggest.mockRejectedValue(new ProviderError('bad-key'));
+    suggest.mockRejectedValue(new ProviderError('unavailable'));
     const { result } = render({ query: 'lyon' });
 
     await advance(300);
 
-    expect(result.current).toEqual({ suggestions: [], status: 'error', error: 'bad-key' });
+    expect(result.current).toEqual({ suggestions: [], status: 'error', error: 'unavailable' });
   });
 
   it('maps non-provider failures to unknown', async () => {

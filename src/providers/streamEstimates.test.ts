@@ -270,7 +270,7 @@ describe('streamEstimates', () => {
     expect(states).toHaveLength(0);
   });
 
-  it.each(['bad-key', 'missing-key', 'rate-limited'] as const)(
+  it.each(['unavailable', 'rate-limited'] as const)(
     'stops scheduling after %s and marks the remaining slots with it',
     async (kind) => {
       const { provider, calls } = manualProvider();
@@ -534,7 +534,7 @@ describe('streamEstimates pacing and rate-limit backoff', () => {
     expect(startedAt.map((t) => t - t0)).toEqual([0, 400]);
   });
 
-  it.each(['bad-key', 'missing-key'] as const)('does not retry %s', async (kind) => {
+  it.each(['unavailable'] as const)('does not retry %s', async (kind) => {
     const { provider, startedAt } = scriptedProvider(() => kind);
     const states: SlotState[] = [];
     const done = streamEstimates({

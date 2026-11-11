@@ -28,18 +28,18 @@ describe('stores', () => {
     stubLanguage('fr-CA');
     resetStores();
 
-    expect(settingsStore.get()).toEqual({ lang: 'fr', apiKey: '' });
+    expect(settingsStore.get()).toEqual({ lang: 'fr' });
   });
 
   it('settings default to English otherwise', () => {
     stubLanguage('de-DE');
     resetStores();
 
-    expect(settingsStore.get()).toEqual({ lang: 'en', apiKey: '' });
+    expect(settingsStore.get()).toEqual({ lang: 'en' });
   });
 
   it('persists under ht:v1 keys', () => {
-    settingsStore.set({ lang: 'fr', apiKey: 'k' });
+    settingsStore.set({ lang: 'fr' });
     placesStore.set({});
     lastTripStore.set({ from: null, to: null });
 
@@ -54,6 +54,6 @@ describe('stores', () => {
       new StorageEvent('storage', { key: 'ht:v1:settings', storageArea: localStorage }),
     );
 
-    expect(settingsStore.get()).toEqual({ lang: 'en', apiKey: '' });
+    expect(settingsStore.get()).toEqual({ lang: 'en' });
   });
 });
