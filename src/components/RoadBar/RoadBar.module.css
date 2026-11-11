@@ -9,16 +9,18 @@
 .road {
   position: relative;
   flex: none;
-  display: flex;
   width: calc((var(--trip) + var(--over)) * 100%);
   height: 100%;
   transform-origin: left center;
   animation: draw var(--draw-duration) var(--ease-out) both;
   animation-delay: calc(var(--i) * var(--draw-stagger));
+  /* The shared scale changes whenever a slower trip arrives; ease every bar to it instead of jumping. */
+  transition: width var(--dur-rescale) var(--ease-out);
 }
 
 .still {
   animation: none;
+  transition: none;
 }
 
 @keyframes draw {
@@ -30,44 +32,53 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .road {
-    animation: none;
-  }
-}
-
-.trip,
-.over {
-  min-width: 0;
-}
-
-.trip {
-  flex: none;
-  width: calc(var(--trip) / (var(--trip) + var(--over)) * 100%);
-  border-radius: var(--radius-bar) 0 0 var(--radius-bar);
+/* The trip colour fills the whole bar and the overhang sits on top at the right end, so adding the
+   overhang changes colour only: the bar and its row never move. */
+.fill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--radius-bar);
   background: var(--road);
 }
 
-.trip:last-child {
-  border-radius: var(--radius-bar);
-}
-
 .over {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: calc(var(--over) / (var(--trip) + var(--over)) * 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 0 var(--radius-bar) var(--radius-bar) 0;
   background: var(--cost);
   font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: 0.06em;
   line-height: 1;
   color: var(--on-cost);
+  /* Starts as a sliver at the far end and grows back toward where the fastest trip would have ended. */
+  animation: reveal var(--draw-duration) var(--ease-out) both;
+  animation-delay: calc(var(--i) * var(--draw-stagger));
+  transition: width var(--dur-rescale) var(--ease-out);
 }
 
-/* Underline under the best trip; it draws in with the bar. */
+.still .over {
+  animation: none;
+  transition: none;
+}
+
+@keyframes reveal {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* Underline under the best trip; it fades in when the best is known. */
 .best::after {
   content: '';
   position: absolute;
@@ -77,6 +88,28 @@
   height: 3px;
   border-radius: 2px;
   background: var(--action);
+  animation: fade-in var(--dur-enter) var(--ease-out) both;
+}
+
+.still.best::after {
+  animation: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .road,
+  .over,
+  .best::after,
+  .bestTag,
+  .peakTag {
+    animation: none;
+    transition: none;
+  }
 }
 
 .bestTag,
@@ -89,6 +122,12 @@
   letter-spacing: 0.06em;
   line-height: 1.3;
   white-space: nowrap;
+  animation: fade-in var(--dur-enter) var(--ease-out) both;
+}
+
+.still ~ .bestTag,
+.still ~ .peakTag {
+  animation: none;
 }
 
 .bestTag {

@@ -58,6 +58,7 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-fast: 120ms;
   --dur-enter: 220ms;
+  --dur-rescale: 400ms;
   --draw-duration: 600ms;
   --draw-stagger: 35ms;
 

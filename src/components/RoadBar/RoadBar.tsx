@@ -33,8 +33,13 @@ export function RoadBar({ trip, over, emphasis, index, still, tagText, tagInside
   return (
     <span className={styles.track}>
       <span className={roadClass} style={roadStyle} data-testid="road">
-        <span className={styles.trip} />
-        {over > 0 && <span className={styles.over}>{insideLabel}</span>}
+        <span className={styles.fill}>
+          {over > 0 && (
+            <span className={styles.over} data-testid="over">
+              {insideLabel}
+            </span>
+          )}
+        </span>
       </span>
       {besideLabel !== null && (
         <span className={emphasis === 'best' ? styles.bestTag : styles.peakTag}>{besideLabel}</span>

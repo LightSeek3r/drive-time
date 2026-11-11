@@ -13,11 +13,14 @@ describe('RoadBar', () => {
   });
 
   it('draws no overhang for a trip at its fastest', () => {
-    const { container } = render(
-      <RoadBar {...base} trip={0.4} over={0} emphasis="best" tagText="BEST" />,
-    );
-    expect(container.querySelectorAll('[data-testid="road"] > span')).toHaveLength(1);
+    render(<RoadBar {...base} trip={0.4} over={0} emphasis="best" tagText="BEST" />);
+    expect(screen.queryByTestId('over')).not.toBeInTheDocument();
     expect(screen.getByText('BEST')).toBeInTheDocument();
+  });
+
+  it('draws the overhang inside the bar when traffic adds minutes', () => {
+    render(<RoadBar {...base} trip={0.4} over={0.2} emphasis="rest" />);
+    expect(screen.getByTestId('road')).toContainElement(screen.getByTestId('over'));
   });
 
   it('puts PEAK inside the overhang when it is wide enough', () => {
