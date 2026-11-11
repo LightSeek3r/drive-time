@@ -28,6 +28,18 @@ npm run icons      # regenerate PNG icons from public/icons/icon.svg
 
 Geolocation and service workers need HTTPS in production (localhost is exempt). Any static host works.
 
+## Deploy
+
+Hosted as a Cloudflare Worker with static assets (`wrangler.jsonc`), served on `home-timer.unit42.fr`. The custom domain is created by `wrangler deploy` as long as the `unit42.fr` zone is in the same Cloudflare account.
+
+Push-to-deploy uses Workers Builds. In the dashboard: Workers & Pages, Create application, GitHub, pick this repo, then set:
+
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+- Production branch: `main`
+
+The Worker name in the dashboard must stay `home-timer` to match `wrangler.jsonc`. Manual deploy: `npm run deploy`.
+
 ## Layout
 
 - `src/domain` pure logic: departure slots, summary, RFC 3339 times, sample data
