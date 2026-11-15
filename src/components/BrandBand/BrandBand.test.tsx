@@ -12,7 +12,7 @@ describe('BrandBand', () => {
         <BrandBand onOpenSettings={onOpenSettings} />
       </I18nProvider>,
     );
-    expect(screen.getByRole('heading', { name: 'Home Timer' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Drive Time' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Settings' }));
     expect(onOpenSettings).toHaveBeenCalledOnce();
   });

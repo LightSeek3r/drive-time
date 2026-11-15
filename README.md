@@ -1,4 +1,4 @@
-# Home Timer
+# Drive Time
 
 When should I leave? Pick where you start and where you are going, and see the car travel time for a list of departure times side by side: your start time, then one departure every 10 minutes for three hours (19 rows). Settings change the reach (2, 3 or 4 hours) and the step (5, 10, 15 or 30 minutes), up to 25 rows. The fastest one is called out. Tap a row to restart the list at that time.
 
@@ -36,7 +36,7 @@ Geolocation and service workers need HTTPS in production (localhost is exempt). 
 
 ## Deploy
 
-Hosted as a Cloudflare Worker with static assets (`wrangler.jsonc`), served on `home-timer.unit42.fr`. The custom domain is created by `wrangler deploy` as long as the `unit42.fr` zone is in the same Cloudflare account.
+Hosted as a Cloudflare Worker with static assets (`wrangler.jsonc`), served on `drive-time.unit42.fr`. The custom domain is created by `wrangler deploy` as long as the `unit42.fr` zone is in the same Cloudflare account. The former host `home-timer.unit42.fr` stays attached to the same Worker so old links and installed copies keep working; browser storage is per host, so Home and Work saved there are not shared with the new one. The Worker keeps its original name `home-timer`.
 
 Push-to-deploy uses Workers Builds. In the dashboard: Workers & Pages, Create application, GitHub, pick this repo, then set:
 

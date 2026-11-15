@@ -83,7 +83,7 @@ beforeEach(() => {
 describe('App', () => {
   it('renders heading', () => {
     renderApp();
-    expect(screen.getByRole('heading', { name: /Home Timer/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Drive Time/i })).toBeInTheDocument();
   });
 
   it('answers first, then shows nine departures with the best one tagged', () => {

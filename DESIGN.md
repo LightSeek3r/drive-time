@@ -1,5 +1,5 @@
 ---
-name: Home Timer
+name: Drive Time
 description: A night-first departure comparison in neutral tarmac grey, where pale grey bars show the trip, red shows the minutes traffic adds, and one acid lime marks everything you can act on.
 colors:
   ground: '#101010'
@@ -184,13 +184,13 @@ components:
     rounded: '{rounded.sheet}'
 ---
 
-# Design System: Home Timer
+# Design System: Drive Time
 
 ## Overview
 
 **Creative North Star: "Tarmac"**
 
-Home Timer is read at the door, in the car, or at a dim desk before dawn, so it is night-first: a true neutral near-black ground (#101010) with no warm or blue cast, like a road at night. Colour is rationed to two signals that carry meaning and nothing else competes with them: **acid lime** is everything you can act on or should take (focus, the active choice, the primary action, the best slot), and **traffic red** is the minutes traffic adds. The trip itself is a pale grey bar, so a driver reads the length first and the cost second.
+Drive Time is read at the door, in the car, or at a dim desk before dawn, so it is night-first: a true neutral near-black ground (#101010) with no warm or blue cast, like a road at night. Colour is rationed to two signals that carry meaning and nothing else competes with them: **acid lime** is everything you can act on or should take (focus, the active choice, the primary action, the best slot), and **traffic red** is the minutes traffic adds. The trip itself is a pale grey bar, so a driver reads the length first and the cost second.
 
 The type has a human voice. Instrument Serif sets only the wordmark, the sheet titles and the answer ("Leave 7:04 PM", the time in lime); everything else, including every figure a driver compares, is Schibsted Grotesk. There is no width axis and no mixed display faces. Copy is plain and admits uncertainty ("Estimated from typical traffic", a SAMPLE DATA tag until real places are set).
 
@@ -289,7 +289,7 @@ Controls are pills (999px): buttons, the segmented control, the time button, the
 
 ### Brand band
 
-56px band, no divider: the road mark and "Home Timer" in Brand (Instrument Serif 24px) on the left, a 44px round settings button in muted on the right (`raised`-tint hover).
+56px band, no divider: the road mark and "Drive Time" in Brand (Instrument Serif 24px) on the left, a 44px round settings button in muted on the right (`raised`-tint hover).
 
 ### Route block, swap and locate
 

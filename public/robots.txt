@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://home-timer.unit42.fr/sitemap.xml
+Sitemap: https://drive-time.unit42.fr/sitemap.xml

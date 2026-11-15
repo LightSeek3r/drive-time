@@ -10,8 +10,8 @@ export default defineConfig(
       VitePWA({
         registerType: 'autoUpdate',
         manifest: {
-          name: 'Home Timer',
-          short_name: 'Home Timer',
+          name: 'Drive Time',
+          short_name: 'Drive Time',
           display: 'standalone',
           lang: 'en',
           description:

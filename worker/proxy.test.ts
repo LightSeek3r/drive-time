@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { handleApiRequest, type Env, type Fetcher } from './proxy';
 
-const ORIGIN = 'https://home-timer.unit42.fr';
+const ORIGIN = 'https://drive-time.unit42.fr';
 const KEY = 'server-secret';
 const SAME_ORIGIN = { 'Sec-Fetch-Site': 'same-origin' };
 const ROUTE = '/api/routing/1/calculateRoute/45.764043,4.835659:48.856614,2.352222/json';

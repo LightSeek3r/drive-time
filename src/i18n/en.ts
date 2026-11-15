@@ -1,5 +1,5 @@
 export const en = {
-  appName: 'Home Timer',
+  appName: 'Drive Time',
   settings: 'Settings',
   from: 'From',
   to: 'To',
@@ -37,7 +37,7 @@ export const en = {
   settings_privacy: 'Your places stay on this device',
   settings_save: 'Save',
   settings_close: 'Close',
-  onboarding_title: 'Welcome to Home Timer',
+  onboarding_title: 'Welcome to Drive Time',
   empty_state: 'No trips saved yet',
   loading: 'Loading...',
   error_unavailable: 'The service is unavailable right now. Please try again later.',

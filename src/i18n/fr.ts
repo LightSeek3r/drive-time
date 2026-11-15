@@ -4,7 +4,7 @@ type Widen<T> = T extends string ? string : never;
 export type Messages = { [K in keyof typeof en]: Widen<(typeof en)[K]> };
 
 export const fr: Messages = {
-  appName: 'Home Timer',
+  appName: 'Drive Time',
   settings: 'Paramètres',
   from: 'De',
   to: 'Vers',
@@ -42,7 +42,7 @@ export const fr: Messages = {
   settings_privacy: 'Vos lieux restent sur cet appareil',
   settings_save: 'Enregistrer',
   settings_close: 'Fermer',
-  onboarding_title: 'Bienvenue dans Home Timer',
+  onboarding_title: 'Bienvenue dans Drive Time',
   empty_state: 'Aucun trajet enregistré pour le moment',
   loading: 'Chargement...',
   error_unavailable: 'Le service est indisponible pour le moment. Réessayez plus tard.',

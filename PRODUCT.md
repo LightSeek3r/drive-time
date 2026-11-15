@@ -38,7 +38,7 @@ Origin comes from the device's location or a typed place. Destination is typed o
 
 ## Brand Commitments
 
-Name: Home Timer. UI languages: English and French, auto-detected, switchable in Settings.
+Name: Drive Time. UI languages: English and French, auto-detected, switchable in Settings.
 
 ## Evidence on Hand
 
