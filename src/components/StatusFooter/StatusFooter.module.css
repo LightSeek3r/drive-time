@@ -47,4 +47,9 @@
   .footer {
     padding-inline: var(--space-5);
   }
+
+  /* The note fits two lines here, which stays under the Refresh button's height. */
+  .note {
+    min-height: 2lh;
+  }
 }
