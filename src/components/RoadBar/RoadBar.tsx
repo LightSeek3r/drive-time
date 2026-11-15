@@ -14,11 +14,9 @@ interface RoadBarProps {
   still: boolean;
   /** Word marking the best or peak row, drawn by the bar so it never relies on colour alone. */
   tagText: string | null;
-  /** Peak text goes inside the overhang when it is wide enough, else beside the bar. */
-  tagInside: boolean;
 }
 
-export function RoadBar({ trip, over, emphasis, index, still, tagText, tagInside }: RoadBarProps) {
+export function RoadBar({ trip, over, emphasis, index, still, tagText }: RoadBarProps) {
   const roadStyle = {
     '--trip': trip.toFixed(4),
     '--over': over.toFixed(4),
@@ -27,22 +25,16 @@ export function RoadBar({ trip, over, emphasis, index, still, tagText, tagInside
   const roadClass = [styles.road, emphasis === 'best' ? styles.best : '', still ? styles.still : '']
     .filter(Boolean)
     .join(' ');
-  const insideLabel = emphasis === 'peak' && tagInside ? tagText : null;
-  const besideLabel = tagText !== null && insideLabel === null ? tagText : null;
 
   return (
     <span className={styles.track}>
       <span className={roadClass} style={roadStyle} data-testid="road">
         <span className={styles.fill}>
-          {over > 0 && (
-            <span className={styles.over} data-testid="over">
-              {insideLabel}
-            </span>
-          )}
+          {over > 0 && <span className={styles.over} data-testid="over" />}
         </span>
       </span>
-      {besideLabel !== null && (
-        <span className={emphasis === 'best' ? styles.bestTag : styles.peakTag}>{besideLabel}</span>
+      {tagText !== null && (
+        <span className={emphasis === 'best' ? styles.bestTag : styles.peakTag}>{tagText}</span>
       )}
     </span>
   );

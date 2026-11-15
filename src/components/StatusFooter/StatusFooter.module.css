@@ -14,6 +14,9 @@
 
 .note {
   min-width: 0;
+  /* Room for the estimate line (which wraps on a phone) plus the adjustment line, held from the first
+     frame so the footer does not grow when the adjustment is known. */
+  min-height: 3lh;
   font-size: var(--text-xs);
   color: var(--muted);
   text-wrap: pretty;

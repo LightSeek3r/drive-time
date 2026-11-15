@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildSlots, summarise, toEstimate } from '../../domain/departures';
 import type { SlotState } from '../../domain/types';
-import { buildRows, PEAK_INLINE_MIN_SHARE, TRACK_HEADROOM } from './rows';
+import { buildRows, TRACK_HEADROOM } from './rows';
 
 const BASE = new Date(2026, 10, 10, 7, 45);
 const MINUTES = [33, 37, 42, 40, 36, 32, 30, 29, 27];
@@ -50,11 +50,6 @@ describe('buildRows', () => {
   it('keeps every bar inside the track', () => {
     for (const row of rows)
       expect(row.trip + row.over).toBeLessThanOrEqual(1 / TRACK_HEADROOM + 1e-9);
-  });
-
-  it('can fit the PEAK word inside the widest overhang in a typical spread', () => {
-    const peak = rows.find((r) => r.emphasis === 'peak');
-    expect(peak?.over ?? 0).toBeGreaterThanOrEqual(PEAK_INLINE_MIN_SHARE);
   });
 
   it('shows no delta on the first slot and signed minutes elsewhere', () => {

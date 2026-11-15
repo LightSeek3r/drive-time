@@ -18,7 +18,7 @@ Each refresh makes one routing request per row (19 with the default window, 25 a
 
 ### Live traffic adjustment
 
-TomTom returns, for each departure, the typical duration (`historicTrafficTravelTimeInSeconds`) and a duration from real-time speeds (`liveTrafficIncidentsTravelTimeInSeconds`). When the first departure is within 10 minutes of the request, the app takes `live / typical` (clamped to 0.7 to 2.5) and applies it to every row's typical duration, fading with `exp(-minutes ahead / 60)`. Rows start from the typical figure, not from TomTom's own blend, so a jam is not counted twice. The footer says when this is on ("Adjusted for live traffic (+7 min now, fading over ~2 h)"). The logic is in `src/domain/calibration.ts`; the 60-minute decay is a guess to tune with real data.
+TomTom returns, for each departure, the typical duration (`historicTrafficTravelTimeInSeconds`) and a duration from real-time speeds (`liveTrafficIncidentsTravelTimeInSeconds`). When the first departure is within 10 minutes of the request, the app takes `live / typical` (clamped to 0.7 to 2.5) and applies it to every row's typical duration, fading with `exp(-minutes ahead / 60)`. Rows start from the typical figure, not from TomTom's own blend, so a jam is not counted twice. The footer says when this is on ("Adjusted for live traffic (+7 min)", the minutes live traffic adds to the first departure). The logic is in `src/domain/calibration.ts`; the 60-minute decay is a guess to tune with real data.
 
 ## Develop
 

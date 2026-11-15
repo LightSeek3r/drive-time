@@ -31,7 +31,7 @@ export const fr: Messages = {
   estimated_from_traffic: 'Estimé à partir du trafic typique',
   updated_time: 'mis à jour {time}',
   refresh: 'Actualiser',
-  adjusted_note: 'Ajusté au trafic actuel ({delta} min maintenant, s’estompe en ~2 h)',
+  adjusted_note: 'Ajusté au trafic actuel ({delta} min)',
   row_select: 'Commencer la liste à {time}',
   jump_to_best: 'Aller au meilleur horaire',
   settings_title: 'Paramètres',

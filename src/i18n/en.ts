@@ -26,7 +26,7 @@ export const en = {
   estimated_from_traffic: 'Estimated from typical traffic',
   updated_time: 'updated {time}',
   refresh: 'Refresh',
-  adjusted_note: 'Adjusted for live traffic ({delta} min now, fading over ~2 h)',
+  adjusted_note: 'Adjusted for live traffic ({delta} min)',
   row_select: 'Start the list at {time}',
   jump_to_best: 'Go to best time',
   settings_title: 'Settings',

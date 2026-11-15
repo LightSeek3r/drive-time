@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { RoadBar } from './RoadBar';
 
-const base = { index: 0, still: false, tagText: null, tagInside: false } as const;
+const base = { index: 0, still: false, tagText: null } as const;
 
 describe('RoadBar', () => {
   it('takes its widths from the trip and overhang shares', () => {
@@ -23,15 +23,8 @@ describe('RoadBar', () => {
     expect(screen.getByTestId('road')).toContainElement(screen.getByTestId('over'));
   });
 
-  it('puts PEAK inside the overhang when it is wide enough', () => {
-    render(<RoadBar {...base} trip={0.4} over={0.22} emphasis="peak" tagText="PEAK" tagInside />);
-    expect(screen.getByTestId('road')).toContainElement(screen.getByText('PEAK'));
-  });
-
-  it('puts PEAK beside the bar when the overhang is too narrow', () => {
-    render(
-      <RoadBar {...base} trip={0.4} over={0.1} emphasis="peak" tagText="PEAK" tagInside={false} />,
-    );
+  it('keeps the PEAK tag next to the bar, not inside it, so its width never changes the bar', () => {
+    render(<RoadBar {...base} trip={0.4} over={0.22} emphasis="peak" tagText="PEAK" />);
     expect(screen.getByTestId('road')).not.toContainElement(screen.getByText('PEAK'));
   });
 

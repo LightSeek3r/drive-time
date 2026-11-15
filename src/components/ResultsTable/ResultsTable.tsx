@@ -4,7 +4,7 @@ import { useT } from '../../i18n';
 import { Clock } from '../Clock/Clock';
 import { RoadBar } from '../RoadBar/RoadBar';
 import styles from './ResultsTable.module.css';
-import { PEAK_INLINE_MIN_SHARE, type ResultRow } from './rows';
+import type { ResultRow } from './rows';
 
 interface ResultsTableProps {
   rows: readonly ResultRow[];
@@ -94,7 +94,6 @@ function ResultRowView({
                   ? t('peak_tag')
                   : null
             }
-            tagInside={row.over >= PEAK_INLINE_MIN_SHARE}
           />
         )}
       </td>

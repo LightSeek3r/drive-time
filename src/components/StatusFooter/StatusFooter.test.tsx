@@ -29,12 +29,12 @@ describe('StatusFooter', () => {
 
   it('says how far live traffic moved the figures', () => {
     setup(null, 6);
-    expect(screen.getByText(/Adjusted for live traffic \(\+6 min now/)).toBeInTheDocument();
+    expect(screen.getByText(/Adjusted for live traffic \(\+6 min\)/)).toBeInTheDocument();
   });
 
   it('uses a minus sign when roads are clearer than usual', () => {
     setup(null, -3);
-    expect(screen.getByText(/\(−3 min now/)).toBeInTheDocument();
+    expect(screen.getByText(/\(−3 min\)/)).toBeInTheDocument();
   });
 
   it.each([null, 0])('says nothing about live traffic for %s', (value) => {

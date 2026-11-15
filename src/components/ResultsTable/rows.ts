@@ -9,9 +9,6 @@ import type { ProviderErrorKind, SlotEstimate, SlotState } from '../../domain/ty
 /** The shared track stands for this many times the slowest trip, so every bar fits with room for its tag. */
 export const TRACK_HEADROOM = 1.3;
 
-/** Below this share of the track the overhang is too narrow to hold the PEAK word. */
-export const PEAK_INLINE_MIN_SHARE = 0.2;
-
 export type RowEmphasis = 'rest' | 'best' | 'peak';
 
 interface RowBase {
