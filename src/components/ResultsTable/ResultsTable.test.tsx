@@ -80,6 +80,20 @@ describe('ResultsTable', () => {
     expect(scrolled).toEqual([screen.getAllByRole('row')[9]]);
   });
 
+  it('keeps the jump link in the layout but out of reach while there is no later best row', () => {
+    renderTable(
+      slots().map((state) => ({
+        ...state,
+        status: 'loading',
+        slot: state.status === 'ready' ? state.estimate.slot : state.slot,
+      })) as SlotState[],
+    );
+    const link = screen.getByText('Go to best time');
+    expect(link).toBeDisabled();
+    expect(link).toHaveAttribute('aria-hidden', 'true');
+    expect(link).toHaveAttribute('tabindex', '-1');
+  });
+
   it('explains the bar colours in a legend', () => {
     renderTable(slots());
     expect(screen.getByText('Trip at its fastest')).toBeInTheDocument();

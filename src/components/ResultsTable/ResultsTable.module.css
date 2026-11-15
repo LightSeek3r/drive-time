@@ -19,7 +19,16 @@
 }
 
 .legendJump {
-  margin-left: auto;
+  /* Own row on a phone, where the swatches already fill the line; beside them on a wide screen. */
+  flex-basis: 100%;
+  text-align: right;
+}
+
+@media (min-width: 900px) {
+  .legendJump {
+    flex-basis: auto;
+    margin-left: auto;
+  }
 }
 
 .jump {
@@ -27,6 +36,10 @@
   font-size: var(--text-xs);
   font-weight: 700;
   color: var(--action);
+}
+
+.jump:disabled {
+  visibility: hidden;
 }
 
 .jump:hover {

@@ -83,11 +83,13 @@ function ReadyAnswer({
         </h2>
         {tag}
       </div>
-      {lines.map((line) => (
-        <p key={line} className={styles.line}>
-          <Marked text={line} markClassName={styles.figure ?? ''} />
-        </p>
-      ))}
+      <div className={styles.lines}>
+        {lines.map((line) => (
+          <p key={line} className={styles.line}>
+            <Marked text={line} markClassName={styles.figure ?? ''} />
+          </p>
+        ))}
+      </div>
     </>
   );
 }
@@ -119,8 +121,10 @@ export function AnswerPanel(props: AnswerPanelProps) {
             <span className={`${styles.bone} ${styles.boneHeadline}`} />
             {tag}
           </div>
-          <span className={`${styles.bone} ${styles.boneLine}`} />
-          <span className={`${styles.bone} ${styles.boneLineShort}`} />
+          <div className={styles.lines}>
+            <span className={`${styles.bone} ${styles.boneLine}`} />
+            <span className={`${styles.bone} ${styles.boneLineShort}`} />
+          </div>
         </>
       )}
       <Announcer text={spoken} changeKey={changeKey} />

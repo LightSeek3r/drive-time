@@ -46,6 +46,16 @@
   text-wrap: pretty;
 }
 
+/* The answer has one to three lines. Room for three is held from the first frame, so the skeleton
+   and the answer are the same height and nothing below them moves when the answer arrives. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: calc(3 * 1lh + 2 * var(--space-2));
+  font-size: var(--text-base);
+}
+
 .figure {
   font-weight: 650;
 }
@@ -63,19 +73,29 @@
   animation: shimmer 1.4s linear infinite;
 }
 
+/* Each bone is as tall as the line box it stands in for; the painted bar is the middle of it. */
 .boneHeadline {
   width: 62%;
-  height: 44px;
+  font-size: var(--text-display);
+  line-height: 1;
+  height: 1lh;
+  padding-block: 0.06em;
+  background-clip: content-box;
+}
+
+.boneLine,
+.boneLineShort {
+  height: 1lh;
+  padding-block: 0.3em;
+  background-clip: content-box;
 }
 
 .boneLine {
   width: 88%;
-  height: 14px;
 }
 
 .boneLineShort {
   width: 54%;
-  height: 14px;
 }
 
 @keyframes shimmer {
@@ -101,5 +121,9 @@
   .headline {
     font-size: var(--text-display-wide);
     text-wrap: wrap;
+  }
+
+  .boneHeadline {
+    font-size: var(--text-display-wide);
   }
 }

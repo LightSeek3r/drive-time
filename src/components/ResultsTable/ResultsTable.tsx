@@ -133,13 +133,19 @@ export function ResultsTable({ rows, drawKey, reducedMotion, onSelect }: Results
           <i className={`${styles.swatch} ${styles.swatchExtra}`} />
           {t('legend_extra')}
         </li>
-        {bestIndex > 0 && (
-          <li className={styles.legendJump}>
-            <button type="button" className={styles.jump} onClick={jumpToBest}>
-              {t('jump_to_best')}
-            </button>
-          </li>
-        )}
+        <li className={styles.legendJump}>
+          {/* Always laid out, only hidden: the link appearing must not push the table down. */}
+          <button
+            type="button"
+            className={styles.jump}
+            onClick={jumpToBest}
+            disabled={bestIndex <= 0}
+            tabIndex={bestIndex > 0 ? undefined : -1}
+            aria-hidden={bestIndex > 0 ? undefined : true}
+          >
+            {t('jump_to_best')}
+          </button>
+        </li>
       </ul>
       <table className={styles.table}>
         <caption className="sr-only">{t('table_caption')}</caption>
