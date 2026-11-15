@@ -46,17 +46,17 @@
   color: var(--muted);
 }
 
-.langs {
+.choices {
   display: flex;
   gap: var(--space-2);
 }
 
-.lang {
+.choice {
   position: relative;
   flex: 1;
 }
 
-.langInput {
+.choiceInput {
   position: absolute;
   inset: 0;
   margin: 0;
@@ -64,7 +64,7 @@
   cursor: pointer;
 }
 
-.langText {
+.choiceText {
   display: grid;
   place-items: center;
   height: var(--touch);
@@ -74,15 +74,21 @@
   color: var(--muted);
 }
 
-.langInput:checked + .langText {
+.choiceInput:checked + .choiceText {
   background: var(--action);
   border-color: var(--action);
   color: var(--on-action);
 }
 
-.langInput:focus-visible + .langText {
+.choiceInput:focus-visible + .choiceText {
   outline: 2px solid var(--action);
   outline-offset: 2px;
+}
+
+.hint {
+  margin-top: calc(var(--space-2) * -1);
+  font-size: var(--text-sm);
+  color: var(--muted);
 }
 
 .privacy {

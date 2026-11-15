@@ -1,4 +1,5 @@
 import type { Lang, LastTrip, SavedPlaces, Settings } from '../domain/types';
+import { DEFAULT_WINDOW } from '../domain/window';
 import { createLocalStore } from './localStore';
 import { validateLastTrip, validateSavedPlaces, validateSettings } from './validators';
 
@@ -18,7 +19,7 @@ export const placesStore = createLocalStore<SavedPlaces>({
 export const settingsStore = createLocalStore<Settings>({
   key: 'ht:v1:settings',
   version: 1,
-  defaults: () => ({ lang: detectLang() }),
+  defaults: () => ({ lang: detectLang(), ...DEFAULT_WINDOW }),
   validate: validateSettings,
 });
 

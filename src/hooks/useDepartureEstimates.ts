@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { calibrate } from '../domain/calibration';
 import { buildSlots, resolveBase, summarise, type DepartureSummary } from '../domain/departures';
 import { sampleEstimates } from '../domain/sampleData';
 import type {
@@ -9,6 +10,7 @@ import type {
   SlotState,
   StartTime,
 } from '../domain/types';
+import { slotCount, type DepartureWindow } from '../domain/window';
 import { streamEstimates } from '../providers/streamEstimates';
 import { useOnline } from './useOnline';
 import { useStablePoint } from './useStablePoint';
@@ -20,10 +22,11 @@ export interface DepartureEstimatesInput {
   from: Place | null;
   to: Place | null;
   start: StartTime;
+  window: DepartureWindow;
 }
 
 export interface DepartureEstimatesResult {
-  /** 9 entries: real once from and to are set, the built-in sample until then. Order = departure order. */
+  /** One entry per departure in the window: real once from and to are set, the built-in sample until then. Order = departure order. */
   slots: SlotState[];
   /** summarise() over the READY estimates; undefined while idle/loading or when nothing is ready. */
   summary: DepartureSummary | undefined;
@@ -36,6 +39,8 @@ export interface DepartureEstimatesResult {
   baseTime: Date | null;
   /** When the last run finished (null before, and always null for sample data). */
   updatedAt: Date | null;
+  /** Minutes live traffic currently adds to (or takes off) a typical trip, when the rows were adjusted for it. */
+  adjustedByMin: number | null;
   /** Re-run now, bypassing the 5-minute cache; for the Refresh button. */
   refresh(): void;
 }
@@ -45,10 +50,20 @@ interface RunState {
   runKey: string;
   slots: SlotState[];
   baseTime: Date | null;
+  /** When the requests went out; live traffic is only as fresh as this. */
+  startedAt: Date | null;
   updatedAt: Date | null;
 }
 
-const EMPTY_RUN: RunState = { runKey: '', slots: [], baseTime: null, updatedAt: null };
+const EMPTY_RUN: RunState = {
+  runKey: '',
+  slots: [],
+  baseTime: null,
+  startedAt: null,
+  updatedAt: null,
+};
+// Same lifetime as the estimate cache: older than this, a returning user would be reading stale numbers.
+const STALE_AFTER_MS = 5 * 60_000;
 
 // streamEstimates stops scheduling on these and stamps every remaining slot with the same kind.
 const FATAL_KINDS: ReadonlySet<ProviderErrorKind> = new Set(['unavailable', 'rate-limited']);
@@ -83,6 +98,27 @@ function summariseReady(slots: readonly SlotState[]): DepartureSummary | undefin
   return summary.best === undefined ? undefined : summary;
 }
 
+/** Rows are adjusted as soon as the first departure is in, since that one carries the live reading. */
+function calibrateSlots(
+  slots: readonly SlotState[],
+  startedAt: Date | null,
+): { slots: SlotState[]; nowDeltaMin: number | null } {
+  const ready = slots.flatMap((state) => (state.status === 'ready' ? [state.estimate] : []));
+  if (startedAt === null || !ready.some((estimate) => estimate.slot.offsetMin === 0)) {
+    return { slots: [...slots], nowDeltaMin: null };
+  }
+  const { estimates, nowDeltaMin } = calibrate(ready, startedAt);
+  const byOffset = new Map(estimates.map((estimate) => [estimate.slot.offsetMin, estimate]));
+  return {
+    slots: slots.map((state) => {
+      const estimate =
+        state.status === 'ready' ? byOffset.get(state.estimate.slot.offsetMin) : undefined;
+      return estimate === undefined ? state : { status: 'ready', estimate };
+    }),
+    nowDeltaMin,
+  };
+}
+
 function markLoadingOffline(state: SlotState): SlotState {
   return state.status === 'loading'
     ? { status: 'error', slot: state.slot, kind: 'offline' }
@@ -93,19 +129,19 @@ function pointKey(point: LatLng | null): string {
   return point === null ? '-' : `${point.lat},${point.lon}`;
 }
 
-function sampleRun(start: StartTime): RunState {
+function sampleRun(start: StartTime, { span, step }: DepartureWindow): RunState {
   const baseTime = resolveBase(start, new Date());
-  const slots = sampleEstimates(baseTime).map<SlotState>((estimate) => ({
-    status: 'ready',
-    estimate,
-  }));
-  return { runKey: '', slots, baseTime, updatedAt: null };
+  const slots = sampleEstimates(baseTime, step, slotCount({ span, step })).map<SlotState>(
+    (estimate) => ({ status: 'ready', estimate }),
+  );
+  return { runKey: '', slots, baseTime, startedAt: null, updatedAt: null };
 }
 
 export function useDepartureEstimates({
   from,
   to,
   start,
+  window,
 }: DepartureEstimatesInput): DepartureEstimatesResult {
   const online = useOnline();
   const provider = useTrafficProvider();
@@ -119,19 +155,22 @@ export function useDepartureEstimates({
     [startMs],
   );
 
+  const { span, step } = window;
+
   const [refreshCount, setRefreshCount] = useState(0);
   const handledRefreshCount = useRef(0);
   const refresh = useCallback(() => setRefreshCount((count) => count + 1), []);
 
   const [run, setRun] = useState<RunState>(EMPTY_RUN);
-  const runKey = `${pointKey(fromPoint)}>${pointKey(toPoint)}@${startMs ?? 'now'}#${refreshCount}`;
+  const runKey = `${pointKey(fromPoint)}>${pointKey(toPoint)}@${startMs ?? 'now'}/${span}x${step}#${refreshCount}`;
 
   useEffect(() => {
     if (fromPoint === null || toPoint === null || !online) return;
 
     const controller = new AbortController();
-    const baseTime = resolveBase(stableStart, new Date());
-    const slots = buildSlots(baseTime);
+    const startedAt = new Date();
+    const baseTime = resolveBase(stableStart, startedAt);
+    const slots = buildSlots(baseTime, step, slotCount({ span, step }));
     // Only the run that follows a refresh() click skips the cache; later input changes reuse it.
     const bypassCache = refreshCount !== handledRefreshCount.current;
     handledRefreshCount.current = refreshCount;
@@ -140,6 +179,7 @@ export function useDepartureEstimates({
       runKey,
       slots: slots.map((slot) => ({ status: 'loading', slot })),
       baseTime,
+      startedAt,
       updatedAt: null,
     });
 
@@ -160,13 +200,13 @@ export function useDepartureEstimates({
     });
 
     return () => controller.abort();
-  }, [fromPoint, toPoint, online, stableStart, provider, runKey, refreshCount]);
+  }, [fromPoint, toPoint, online, stableStart, provider, runKey, refreshCount, span, step]);
 
   // Sample data needs no network, so it is derived (never an empty first frame) instead of run in the effect.
   // refreshCount is a dependency only so Refresh re-resolves a 'now' base.
   const sample = useMemo(
-    () => (isSample ? sampleRun(stableStart) : EMPTY_RUN),
-    [isSample, stableStart, refreshCount],
+    () => (isSample ? sampleRun(stableStart, { span, step }) : EMPTY_RUN),
+    [isSample, stableStart, span, step, refreshCount],
   );
 
   const offline = hasPlaces && !online;
@@ -175,7 +215,8 @@ export function useDepartureEstimates({
   const source = isSample ? sample : pending ? EMPTY_RUN : run;
 
   const view = useMemo(() => {
-    const slots = offline ? source.slots.map(markLoadingOffline) : source.slots;
+    const live = offline ? source.slots.map(markLoadingOffline) : source.slots;
+    const { slots, nowDeltaMin } = calibrateSlots(live, source.startedAt);
     const error = offline ? 'offline' : deriveError(slots);
     const slotStatus = deriveStatus(slots);
     const status: EstimatesStatus = pending
@@ -184,8 +225,27 @@ export function useDepartureEstimates({
         ? 'error'
         : slotStatus;
     const summary = status === 'idle' || status === 'loading' ? undefined : summariseReady(slots);
-    return { slots, error, status, summary };
-  }, [source.slots, offline, pending]);
+    return { slots, error, status, summary, adjustedByMin: nowDeltaMin };
+  }, [source.slots, source.startedAt, offline, pending]);
+
+  // Coming back to a tab that sat in the background should not show a stale list as if it were current.
+  const updatedAtRef = useRef(source.updatedAt);
+  updatedAtRef.current = source.updatedAt;
+  useEffect(() => {
+    if (!hasPlaces) return;
+    const onVisible = () => {
+      const updatedAt = updatedAtRef.current;
+      if (
+        document.visibilityState === 'visible' &&
+        updatedAt !== null &&
+        Date.now() - updatedAt.getTime() > STALE_AFTER_MS
+      ) {
+        refresh();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [hasPlaces, refresh]);
 
   return {
     ...view,

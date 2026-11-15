@@ -67,8 +67,12 @@ describe('useSettings', () => {
 
     act(() => result.current.update({ lang: 'fr' }));
 
-    expect(result.current.settings).toEqual({ lang: 'fr' });
-    expect(JSON.parse(localStorage.getItem('ht:v1:settings') ?? '').data).toEqual({ lang: 'fr' });
+    expect(result.current.settings).toEqual({ lang: 'fr', span: 180, step: 10 });
+    expect(JSON.parse(localStorage.getItem('ht:v1:settings') ?? '').data).toEqual({
+      lang: 'fr',
+      span: 180,
+      step: 10,
+    });
   });
 });
 

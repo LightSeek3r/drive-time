@@ -27,6 +27,7 @@ const work: Place = {
 const START_AT = new Date('2099-11-10T08:00:00+01:00');
 const at: StartTime = { mode: 'at', at: START_AT } as StartTime;
 const now: StartTime = { mode: 'now' };
+const WINDOW = { span: 120, step: 15 };
 
 interface ActiveRun {
   options: StreamEstimatesOptions;
@@ -119,12 +120,82 @@ describe('deriveStatus / deriveError', () => {
 });
 
 describe('useDepartureEstimates', () => {
+  it('builds the window from span and step', () => {
+    renderHook(() =>
+      useDepartureEstimates({ window: { span: 180, step: 10 }, from: home, to: work, start: at }),
+    );
+    const { slots } = lastRun().options;
+    expect(slots).toHaveLength(19);
+    expect(slots.map((s) => s.offsetMin).slice(0, 3)).toEqual([0, 10, 20]);
+    expect(slots[18]?.offsetMin).toBe(180);
+  });
+
+  it('adjusts rows from live traffic once the first departure is in', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-10T08:00:00Z'));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: now }),
+    );
+    const { options, finish } = lastRun();
+    const trafficked = (index: number): SlotState => {
+      const slot = options.slots[index]!;
+      return {
+        status: 'ready',
+        estimate: toEstimate(slot, {
+          durationSec: 1200,
+          freeFlowSec: 900,
+          distanceM: 10_000,
+          historicSec: 1200,
+          liveSec: index === 0 ? 1800 : 1200,
+        }),
+      };
+    };
+
+    await act(async () => {
+      for (let i = 0; i < 9; i += 1) options.onSlot(trafficked(i));
+      finish();
+    });
+
+    expect(result.current.adjustedByMin).toBe(10);
+    const durations = result.current.slots.map((s) =>
+      s.status === 'ready' ? s.estimate.durationSec : 0,
+    );
+    expect(durations[0]).toBeCloseTo(1800);
+    expect(durations[8]).toBeGreaterThan(1200);
+    expect(durations[8]).toBeLessThan(durations[1]!);
+  });
+
+  it('refreshes when the tab becomes visible again after the data went stale', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-10T08:00:00Z'));
+    renderHook(() => useDepartureEstimates({ window: WINDOW, from: home, to: work, start: now }));
+    await act(async () => {
+      lastRun().finish();
+    });
+    expect(stream).toHaveBeenCalledTimes(1);
+
+    vi.setSystemTime(new Date('2026-11-10T08:03:00Z'));
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    expect(stream).toHaveBeenCalledTimes(1);
+
+    vi.setSystemTime(new Date('2026-11-10T08:06:00Z'));
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    expect(stream).toHaveBeenCalledTimes(2);
+    expect(stream.mock.calls[1]?.[0].bypassCache).toBe(true);
+  });
+
   it.each([
     ['neither place', null, null],
     ['only from', home, null],
     ['only to', null, work],
   ])('serves sample data without network when %s is set', (_label, from, to) => {
-    const { result } = renderHook(() => useDepartureEstimates({ from, to, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from, to, start: at }),
+    );
 
     expect(stream).not.toHaveBeenCalled();
     expect(result.current.isSample).toBe(true);
@@ -137,7 +208,7 @@ describe('useDepartureEstimates', () => {
 
   it('keeps sample data referentially stable across rerenders', () => {
     const { result, rerender } = renderHook(() =>
-      useDepartureEstimates({ from: null, to: null, start: now }),
+      useDepartureEstimates({ window: WINDOW, from: null, to: null, start: now }),
     );
     const { slots, baseTime } = result.current;
 
@@ -148,7 +219,9 @@ describe('useDepartureEstimates', () => {
   });
 
   it('seeds nine loading slots, streams results in, then reports done with a summary', async () => {
-    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
+    );
 
     expect(stream).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe('loading');
@@ -174,7 +247,9 @@ describe('useDepartureEstimates', () => {
   });
 
   it('passes rounded positions to the stream and bypasses the cache only after refresh', () => {
-    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
+    );
     expect(lastRun().options).toMatchObject({
       from: { lat: 45.76, lon: 4.83 },
       to: { lat: 45.7606, lon: 4.8595 },
@@ -188,7 +263,9 @@ describe('useDepartureEstimates', () => {
   });
 
   it('maps a fatal kind to error and status', () => {
-    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
+    );
     const { options } = lastRun();
 
     act(() => {
@@ -201,7 +278,9 @@ describe('useDepartureEstimates', () => {
   });
 
   it('reports no-route only when every slot failed that way', () => {
-    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
+    );
     const { options } = lastRun();
 
     act(() => {
@@ -218,7 +297,7 @@ describe('useDepartureEstimates', () => {
 
   it('does not rerun for a new Place object at the same position', () => {
     const { rerender } = renderHook(
-      ({ from }) => useDepartureEstimates({ from, to: work, start: at }),
+      ({ from }) => useDepartureEstimates({ window: WINDOW, from, to: work, start: at }),
       { initialProps: { from: home } },
     );
 
@@ -230,7 +309,7 @@ describe('useDepartureEstimates', () => {
 
   it('aborts the previous run and drops its stale state when the destination changes', () => {
     const { result, rerender } = renderHook(
-      ({ to }) => useDepartureEstimates({ from: home, to, start: at }),
+      ({ to }) => useDepartureEstimates({ window: WINDOW, from: home, to, start: at }),
       { initialProps: { to: work } },
     );
     const first = lastRun();
@@ -248,7 +327,7 @@ describe('useDepartureEstimates', () => {
 
   it('does not stamp updatedAt when an aborted run finishes late', async () => {
     const { result, rerender } = renderHook(
-      ({ to }) => useDepartureEstimates({ from: home, to, start: at }),
+      ({ to }) => useDepartureEstimates({ window: WINDOW, from: home, to, start: at }),
       { initialProps: { to: work } },
     );
     const first = lastRun();
@@ -263,7 +342,7 @@ describe('useDepartureEstimates', () => {
 
   it('reruns when the chosen start time changes', () => {
     const { rerender } = renderHook(
-      ({ start }) => useDepartureEstimates({ from: home, to: work, start }),
+      ({ start }) => useDepartureEstimates({ window: WINDOW, from: home, to: work, start }),
       { initialProps: { start: at } },
     );
 
@@ -277,7 +356,7 @@ describe('useDepartureEstimates', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-10T08:00:00Z'));
     const { result, rerender } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: { mode: 'now' } }),
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: { mode: 'now' } }),
     );
     const base = result.current.baseTime;
 
@@ -294,7 +373,7 @@ describe('useDepartureEstimates', () => {
 
   it('aborts the run on unmount', () => {
     const { unmount } = renderHook(() =>
-      useDepartureEstimates({ from: home, to: work, start: at }),
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
     );
     const { options } = lastRun();
 
@@ -305,7 +384,9 @@ describe('useDepartureEstimates', () => {
 
   it('does not start offline, then runs when the connection returns', () => {
     setOnline(false);
-    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
+    );
 
     expect(stream).not.toHaveBeenCalled();
     expect(result.current).toMatchObject({ slots: [], status: 'error', error: 'offline' });
@@ -318,7 +399,9 @@ describe('useDepartureEstimates', () => {
   });
 
   it('keeps ready results and fails the unfinished ones when the connection drops mid-run', () => {
-    const { result } = renderHook(() => useDepartureEstimates({ from: home, to: work, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
+    );
     const { options } = lastRun();
     act(() => {
       options.onSlot(ready(options, 0));
@@ -337,7 +420,9 @@ describe('useDepartureEstimates', () => {
 
   it('keeps sample data while offline', () => {
     setOnline(false);
-    const { result } = renderHook(() => useDepartureEstimates({ from: null, to: null, start: at }));
+    const { result } = renderHook(() =>
+      useDepartureEstimates({ window: WINDOW, from: null, to: null, start: at }),
+    );
 
     expect(result.current.status).toBe('done');
     expect(result.current.error).toBeNull();
@@ -347,7 +432,7 @@ describe('useDepartureEstimates', () => {
 describe('useDepartureEstimates under StrictMode', () => {
   it('aborts the mount-time run and completes with the surviving one', async () => {
     const { result } = renderHook(
-      () => useDepartureEstimates({ from: home, to: work, start: at }),
+      () => useDepartureEstimates({ window: WINDOW, from: home, to: work, start: at }),
       { wrapper: StrictMode },
     );
 

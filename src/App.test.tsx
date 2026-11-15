@@ -56,6 +56,7 @@ function resultWith(overrides: Partial<DepartureEstimatesResult> = {}): Departur
     isSample: false,
     baseTime: BASE,
     updatedAt: new Date(2099, 0, 5, 7, 31),
+    adjustedByMin: null,
     refresh: vi.fn(),
     ...overrides,
   };
@@ -73,7 +74,7 @@ beforeEach(() => {
   localStorage.clear();
   placesStore.set({});
   lastTripStore.set({ from: null, to: null });
-  settingsStore.set({ lang: 'en' });
+  settingsStore.set({ lang: 'en', span: 120, step: 15 });
   mocks.estimates.mockReset().mockReturnValue(resultWith());
   mocks.search.mockReset().mockReturnValue({ suggestions: [], status: 'idle', error: null });
   mocks.online.mockReset().mockReturnValue(true);

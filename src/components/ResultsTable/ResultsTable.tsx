@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { formatClock } from '../../format/time';
 import { useT } from '../../i18n';
 import { Clock } from '../Clock/Clock';
@@ -10,7 +11,12 @@ interface ResultsTableProps {
   /** Changes when the bars should draw in again (first data, new start time). */
   drawKey: string;
   reducedMotion: boolean;
+  /** Makes rows tappable: the list restarts at that departure. Omit for a read-only table. */
+  onSelect?: (departAt: Date) => void;
 }
+
+// A long list would otherwise delay its last bar by close to a second.
+const MAX_STAGGER_INDEX = 12;
 
 function formatDelta(delta: number | null): string {
   if (delta === null) return '—';
@@ -32,18 +38,44 @@ function ResultRowView({
   row,
   index,
   reducedMotion,
+  onSelect,
 }: {
   row: ResultRow;
   index: number;
   reducedMotion: boolean;
+  onSelect: ((departAt: Date) => void) | undefined;
 }) {
   const t = useT();
   const dash = <span className={styles.dash}>—</span>;
 
+  // The first row is already the start, and a departure in the past would just snap back to now.
+  const selectable = onSelect !== undefined && index > 0 && !row.spent;
+  const select = selectable ? () => onSelect(row.departAt) : undefined;
+
   return (
-    <tr className={rowClass(row)} aria-busy={row.status === 'loading'}>
+    <tr
+      className={`${rowClass(row)} ${selectable ? styles.selectable : ''}`}
+      aria-busy={row.status === 'loading'}
+      data-best={row.status === 'ready' && row.emphasis === 'best' ? '' : undefined}
+      // Pointer users get the whole row; the button below is the keyboard and screen reader path.
+      onClick={select}
+    >
       <th scope="row" className={styles.leave}>
-        <Clock date={row.departAt} />
+        {select === undefined ? (
+          <Clock date={row.departAt} />
+        ) : (
+          <button
+            type="button"
+            className={styles.select}
+            aria-label={t('row_select', { time: formatClock(row.departAt) })}
+            onClick={(event) => {
+              event.stopPropagation();
+              select();
+            }}
+          >
+            <Clock date={row.departAt} />
+          </button>
+        )}
       </th>
       <td className={styles.barCell}>
         {row.status === 'loading' && <span className={styles.skeleton} aria-hidden="true" />}
@@ -53,7 +85,7 @@ function ResultRowView({
             trip={row.trip}
             over={row.over}
             emphasis={row.emphasis}
-            index={index}
+            index={Math.min(index, MAX_STAGGER_INDEX)}
             still={reducedMotion}
             tagText={
               row.emphasis === 'best'
@@ -77,9 +109,18 @@ function ResultRowView({
   );
 }
 
-export function ResultsTable({ rows, drawKey, reducedMotion }: ResultsTableProps) {
+export function ResultsTable({ rows, drawKey, reducedMotion, onSelect }: ResultsTableProps) {
   const t = useT();
   const first = rows[0];
+  const body = useRef<HTMLTableSectionElement>(null);
+  const bestIndex = rows.findIndex((row) => row.status === 'ready' && row.emphasis === 'best');
+
+  const jumpToBest = () => {
+    body.current?.querySelector('[data-best]')?.scrollIntoView?.({
+      block: 'center',
+      behavior: reducedMotion ? 'auto' : 'smooth',
+    });
+  };
 
   return (
     <div className={styles.results}>
@@ -92,6 +133,13 @@ export function ResultsTable({ rows, drawKey, reducedMotion }: ResultsTableProps
           <i className={`${styles.swatch} ${styles.swatchExtra}`} />
           {t('legend_extra')}
         </li>
+        {bestIndex > 0 && (
+          <li className={styles.legendJump}>
+            <button type="button" className={styles.jump} onClick={jumpToBest}>
+              {t('jump_to_best')}
+            </button>
+          </li>
+        )}
       </ul>
       <table className={styles.table}>
         <caption className="sr-only">{t('table_caption')}</caption>
@@ -116,13 +164,14 @@ export function ResultsTable({ rows, drawKey, reducedMotion }: ResultsTableProps
             </th>
           </tr>
         </thead>
-        <tbody key={drawKey}>
+        <tbody key={drawKey} ref={body}>
           {rows.map((row, index) => (
             <ResultRowView
               key={row.offsetMin}
               row={row}
               index={index}
               reducedMotion={reducedMotion}
+              onSelect={onSelect}
             />
           ))}
         </tbody>

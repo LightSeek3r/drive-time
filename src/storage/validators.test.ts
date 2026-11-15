@@ -72,12 +72,36 @@ describe('validateSavedPlaces', () => {
 
 describe('validateSettings', () => {
   it('accepts valid settings', () => {
-    expect(validateSettings({ lang: 'fr' })).toEqual({ lang: 'fr' });
-    expect(validateSettings({ lang: 'en' })).toEqual({ lang: 'en' });
+    expect(validateSettings({ lang: 'fr', span: 240, step: 15 })).toEqual({
+      lang: 'fr',
+      span: 240,
+      step: 15,
+    });
+  });
+
+  it('fills the default window for settings saved before it existed', () => {
+    expect(validateSettings({ lang: 'en' })).toEqual({ lang: 'en', span: 180, step: 10 });
+  });
+
+  it('falls back to the default window for an unusable pair', () => {
+    expect(validateSettings({ lang: 'en', span: 180, step: 5 })).toEqual({
+      lang: 'en',
+      span: 180,
+      step: 10,
+    });
+    expect(validateSettings({ lang: 'en', span: 'x', step: null })).toEqual({
+      lang: 'en',
+      span: 180,
+      step: 10,
+    });
   });
 
   it('drops the API key that earlier versions stored', () => {
-    expect(validateSettings({ lang: 'fr', apiKey: 'abc' })).toEqual({ lang: 'fr' });
+    expect(validateSettings({ lang: 'fr', apiKey: 'abc' })).toEqual({
+      lang: 'fr',
+      span: 180,
+      step: 10,
+    });
   });
 
   it.each([

@@ -6,6 +6,7 @@ import type {
   SavedPlaces,
   Settings,
 } from '../domain/types';
+import { DEFAULT_WINDOW, isValidWindow } from '../domain/window';
 
 const SAVED_PLACE_KEYS: readonly SavedPlaceKey[] = ['home', 'work'];
 
@@ -56,7 +57,10 @@ export function validateSavedPlaces(raw: unknown): SavedPlaces | null {
 export function validateSettings(raw: unknown): Settings | null {
   if (!isRecord(raw)) return null;
   if (raw.lang !== 'en' && raw.lang !== 'fr') return null;
-  return { lang: raw.lang };
+  // span and step arrived after v1: a missing or unusable pair falls back to the default window.
+  const window = { span: Number(raw.span), step: Number(raw.step) };
+  const { span, step } = isValidWindow(window) ? window : DEFAULT_WINDOW;
+  return { lang: raw.lang, span, step };
 }
 
 /** `undefined` signals an invalid value, so it stays distinct from a legitimate `null`. */

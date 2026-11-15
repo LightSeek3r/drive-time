@@ -18,6 +18,22 @@
   gap: var(--space-1);
 }
 
+.legendJump {
+  margin-left: auto;
+}
+
+.jump {
+  min-height: 20px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--action);
+}
+
+.jump:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
 .swatch {
   display: block;
   width: 14px;
@@ -64,6 +80,11 @@
 }
 
 .head th {
+  /* Column labels stay in view while a long list scrolls. */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ground);
   font-weight: 500;
   line-height: 1.2;
   vertical-align: bottom;
@@ -128,6 +149,27 @@ tbody .delta {
 
 .best {
   background: var(--tint-best);
+}
+
+.selectable {
+  cursor: pointer;
+}
+
+.selectable:hover {
+  background: var(--tint-hover);
+}
+
+.select {
+  display: block;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
 }
 
 .dash {

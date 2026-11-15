@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './App.module.css';
 import { AnswerPanel } from './components/AnswerPanel/AnswerPanel';
 import { Banner } from './components/Banner/Banner';
@@ -12,7 +12,9 @@ import { SettingsSheet } from './components/SettingsSheet/SettingsSheet';
 import { StatusFooter } from './components/StatusFooter/StatusFooter';
 import { WhenSection } from './components/WhenSection/WhenSection';
 import { buildSlots, resolveBase } from './domain/departures';
+import { slotCount } from './domain/window';
 import { currentLocationPlace, samePlace } from './domain/places';
+import type { DepartureWindow } from './domain/window';
 import type { Place, SavedPlaceKey, SlotState, StartTime } from './domain/types';
 import { useDepartureEstimates } from './hooks/useDepartureEstimates';
 import { useGeolocation, type GeoState } from './hooks/useGeolocation';
@@ -26,8 +28,11 @@ import { useLang, useT } from './i18n';
 
 const NOW: StartTime = { mode: 'now' };
 
-function loadingSlots(start: StartTime, now: Date): SlotState[] {
-  return buildSlots(resolveBase(start, now)).map((slot) => ({ status: 'loading', slot }));
+function loadingSlots(start: StartTime, now: Date, window: DepartureWindow): SlotState[] {
+  return buildSlots(resolveBase(start, now), window.step, slotCount(window)).map((slot) => ({
+    status: 'loading',
+    slot,
+  }));
 }
 
 export default function App() {
@@ -51,7 +56,11 @@ export default function App() {
   const to = trip.to ?? places.work ?? null;
   const activePlace = activeField === 'from' ? from : to;
 
-  const estimates = useDepartureEstimates({ from, to, start });
+  const window = useMemo<DepartureWindow>(
+    () => ({ span: settings.span, step: settings.step }),
+    [settings.span, settings.step],
+  );
+  const estimates = useDepartureEstimates({ from, to, start, window });
   const { isSample, summary, error } = estimates;
 
   const pick = (field: RouteFieldName, place: Place) => {
@@ -70,7 +79,7 @@ export default function App() {
 
   const openSettings = () => setSettingsOpen(true);
 
-  const slots = estimates.slots.length > 0 ? estimates.slots : loadingSlots(start, now);
+  const slots = estimates.slots.length > 0 ? estimates.slots : loadingSlots(start, now, window);
   const rows = buildRows(slots, summary, now);
   const drawKey = start.mode === 'at' ? String(start.at.getTime()) : 'now';
   const announceKey = `${from?.id ?? '-'}>${to?.id ?? '-'}@${drawKey}`;
@@ -130,8 +139,17 @@ export default function App() {
           </div>
 
           <div className={styles.results}>
-            <ResultsTable rows={rows} drawKey={drawKey} reducedMotion={reducedMotion} />
-            <StatusFooter updatedAt={estimates.updatedAt} onRefresh={estimates.refresh} />
+            <ResultsTable
+              rows={rows}
+              drawKey={drawKey}
+              reducedMotion={reducedMotion}
+              onSelect={(departAt) => setStart({ mode: 'at', at: departAt })}
+            />
+            <StatusFooter
+              updatedAt={estimates.updatedAt}
+              adjustedByMin={estimates.adjustedByMin}
+              onRefresh={estimates.refresh}
+            />
           </div>
         </main>
       </div>

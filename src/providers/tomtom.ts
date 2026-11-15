@@ -160,7 +160,13 @@ function parseRoute(json: unknown): RouteEstimate {
   const summary = isRecord(route) ? route.summary : undefined;
   if (!isRecord(summary)) throw malformed('routing');
 
-  const { travelTimeInSeconds, noTrafficTravelTimeInSeconds, lengthInMeters } = summary;
+  const {
+    travelTimeInSeconds,
+    noTrafficTravelTimeInSeconds,
+    lengthInMeters,
+    historicTrafficTravelTimeInSeconds,
+    liveTrafficIncidentsTravelTimeInSeconds,
+  } = summary;
   if (!isNonNegativeNumber(travelTimeInSeconds) || !isNonNegativeNumber(lengthInMeters)) {
     throw malformed('routing');
   }
@@ -174,6 +180,13 @@ function parseRoute(json: unknown): RouteEstimate {
     durationSec: travelTimeInSeconds,
     freeFlowSec: noTrafficTravelTimeInSeconds ?? travelTimeInSeconds,
     distanceM: lengthInMeters,
+    // Optional extras: a bad value is dropped rather than failing the whole route.
+    ...(isNonNegativeNumber(historicTrafficTravelTimeInSeconds) && {
+      historicSec: historicTrafficTravelTimeInSeconds,
+    }),
+    ...(isNonNegativeNumber(liveTrafficIncidentsTravelTimeInSeconds) && {
+      liveSec: liveTrafficIncidentsTravelTimeInSeconds,
+    }),
   };
 }
 

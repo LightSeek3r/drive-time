@@ -1,6 +1,6 @@
 # Home Timer
 
-When should I leave? Pick where you start and where you are going, and see the car travel time for nine departure times side by side: your start time, then every 15 minutes for two hours. The fastest one is called out.
+When should I leave? Pick where you start and where you are going, and see the car travel time for a list of departure times side by side: your start time, then one departure every 10 minutes for three hours (19 rows). Settings change the reach (2, 3 or 4 hours) and the step (5, 10, 15 or 30 minutes), up to 25 rows. The fastest one is called out. Tap a row to restart the list at that time.
 
 Installable PWA, English and French. Home and Work and your last trip are stored in the browser only. The app shows sample data until you choose a start and a destination.
 
@@ -14,7 +14,11 @@ The TomTom key never reaches the browser. The app calls its own `/api/*` routes,
 2. Store it as a Worker secret named `TOMTOM_API_KEY` (dashboard: Worker, Settings, Variables and Secrets, type Secret; or `npx wrangler secret put TOMTOM_API_KEY`). Without it `/api/*` answers 503 and the app shows a "service unavailable" message.
 3. For local development put `TOMTOM_API_KEY=...` in a gitignored `.dev.vars` file and run `npx wrangler dev` after `npm run build`; `npm run dev` serves the UI only.
 
-Each refresh makes about 9 routing requests. Results are cached for 5 minutes and refreshing is manual.
+Each refresh makes one routing request per row (19 with the default window, 25 at most; Settings shows the count). Results are cached for 5 minutes. Refresh is manual, plus an automatic one when you come back to the tab after more than 5 minutes.
+
+### Live traffic adjustment
+
+TomTom returns, for each departure, the typical duration (`historicTrafficTravelTimeInSeconds`) and a duration from real-time speeds (`liveTrafficIncidentsTravelTimeInSeconds`). When the first departure is within 10 minutes of the request, the app takes `live / typical` (clamped to 0.7 to 2.5) and applies it to every row's typical duration, fading with `exp(-minutes ahead / 60)`. Rows start from the typical figure, not from TomTom's own blend, so a jam is not counted twice. The footer says when this is on ("Adjusted for live traffic (+7 min now, fading over ~2 h)"). The logic is in `src/domain/calibration.ts`; the 60-minute decay is a guess to tune with real data.
 
 ## Develop
 
@@ -44,7 +48,7 @@ The Worker name in the dashboard must stay `home-timer` to match `wrangler.jsonc
 
 ## Layout
 
-- `src/domain` pure logic: departure slots, summary, RFC 3339 times, sample data
+- `src/domain` pure logic: departure slots and window, summary, live-traffic calibration, RFC 3339 times, sample data
 - `src/providers` the `TrafficProvider` seam, the TomTom client (calls `/api/*`), and the throttled, cached estimate stream
 - `worker` the Cloudflare Worker that proxies `/api/*` to TomTom with the secret key
 - `src/storage`, `src/hooks` versioned localStorage stores and React hooks
@@ -54,5 +58,5 @@ The Worker name in the dashboard must stay `home-timer` to match `wrangler.jsonc
 
 ## Known limits
 
-- Predictions are estimates from typical traffic, not guarantees.
+- Predictions are estimates from typical traffic, not guarantees. The live adjustment is a heuristic, and the `historic`/`live` fields were only checked against a hand-written fixture, not a real TomTom response.
 - The furthest future date TomTom accepts for a chosen start time has not been verified with a real key.

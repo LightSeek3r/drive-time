@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import type { Lang, Settings } from '../../domain/types';
+import { SPAN_OPTIONS, STEP_OPTIONS, slotCount, withSpan, withStep } from '../../domain/window';
 import { useT } from '../../i18n';
 import { Button } from '../Button/Button';
 import { Icon } from '../Icon/Icon';
@@ -10,6 +11,40 @@ const LANGUAGES: ReadonlyArray<{ value: Lang; label: string }> = [
   { value: 'en', label: 'English' },
   { value: 'fr', label: 'Français' },
 ];
+
+interface ChoicesProps<V extends string | number> {
+  legend: string;
+  value: V;
+  options: ReadonlyArray<{ value: V; label: string }>;
+  onChange: (value: V) => void;
+}
+
+function Choices<V extends string | number>({ legend, value, options, onChange }: ChoicesProps<V>) {
+  const name = useId();
+  return (
+    <fieldset className={styles.group}>
+      <legend className={styles.label}>{legend}</legend>
+      <div className={styles.choices}>
+        {options.map((option) => (
+          <label key={option.value} className={styles.choice}>
+            <input
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={value === option.value}
+              onChange={() => onChange(option.value)}
+              className={styles.choiceInput}
+            />
+            <span className={styles.choiceText}>{option.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+const SPANS = SPAN_OPTIONS.map((value) => ({ value, label: `${value / 60} h` }));
+const STEPS = STEP_OPTIONS.map((value) => ({ value, label: `${value} min` }));
 
 interface SettingsSheetProps {
   open: boolean;
@@ -27,15 +62,15 @@ interface SettingsFormProps {
 
 function SettingsForm({ settings, titleId, onSave, onClose }: SettingsFormProps) {
   const t = useT();
-  const langName = useId();
   const [lang, setLang] = useState<Lang>(settings.lang);
+  const [window, setWindow] = useState({ span: settings.span, step: settings.step });
 
   return (
     <form
       className={styles.form}
       onSubmit={(event) => {
         event.preventDefault();
-        onSave({ lang });
+        onSave({ lang, ...window });
       }}
     >
       <div className={styles.header}>
@@ -48,24 +83,26 @@ function SettingsForm({ settings, titleId, onSave, onClose }: SettingsFormProps)
         </button>
       </div>
 
-      <fieldset className={styles.group}>
-        <legend className={styles.label}>{t('settings_language')}</legend>
-        <div className={styles.langs}>
-          {LANGUAGES.map((option) => (
-            <label key={option.value} className={styles.lang}>
-              <input
-                type="radio"
-                name={langName}
-                value={option.value}
-                checked={lang === option.value}
-                onChange={() => setLang(option.value)}
-                className={styles.langInput}
-              />
-              <span className={styles.langText}>{option.label}</span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <Choices
+        legend={t('settings_language')}
+        value={lang}
+        options={LANGUAGES}
+        onChange={setLang}
+      />
+
+      <Choices
+        legend={t('settings_span')}
+        value={window.span}
+        options={SPANS}
+        onChange={(span) => setWindow(withSpan(window, span))}
+      />
+      <Choices
+        legend={t('settings_step')}
+        value={window.step}
+        options={STEPS}
+        onChange={(step) => setWindow(withStep(window, step))}
+      />
+      <p className={styles.hint}>{t('settings_window_cost', { n: slotCount(window) })}</p>
 
       <p className={styles.privacy}>{t('settings_privacy')}</p>
 

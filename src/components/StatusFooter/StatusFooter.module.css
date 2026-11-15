@@ -1,9 +1,15 @@
 .footer {
+  /* Stays in reach: with a long list Refresh would otherwise sit far below the fold. */
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  border-top: 1px solid var(--hairline);
+  background: var(--ground);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: 0 var(--space-4) var(--inset-bottom);
+  padding: var(--space-1) var(--space-4) var(--inset-bottom);
 }
 
 .note {
@@ -11,6 +17,10 @@
   font-size: var(--text-xs);
   color: var(--muted);
   text-wrap: pretty;
+}
+
+.adjusted {
+  display: block;
 }
 
 .refresh {

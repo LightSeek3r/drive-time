@@ -65,6 +65,21 @@ describe('createTomTomProvider().route', () => {
       durationSec: 1563,
       freeFlowSec: 1180,
       distanceM: 12840,
+      historicSec: 1540,
+      liveSec: 1563,
+    });
+  });
+
+  it('drops a malformed historic or live figure instead of failing the route', async () => {
+    const broken = structuredClone(routeSuccess);
+    const summary = broken.routes[0]!.summary as Record<string, unknown>;
+    summary.historicTrafficTravelTimeInSeconds = 'n/a';
+    summary.liveTrafficIncidentsTravelTimeInSeconds = -5;
+    const { fetchImpl } = fakeFetch(() => json(broken));
+    await expect(createTomTomProvider({ fetchImpl }).route(routeRequest)).resolves.toEqual({
+      durationSec: 1563,
+      freeFlowSec: 1180,
+      distanceM: 12840,
     });
   });
 

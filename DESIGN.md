@@ -271,7 +271,7 @@ Applied under `@media (prefers-color-scheme: light)` by redefining the same cust
 
 **Results grid:** five columns share one table grid: Leave (left), Duration (the bar, remaining width, minimum 80px), Min (right), Arrive (right, muted), delta versus the first slot (right). All bars share one track scale.
 
-**Rhythm:** the first viewport at 390 by 844 holds the controls, the answer and all nine rows without scrolling.
+**Rhythm:** the first viewport at 390 by 844 holds the controls, the answer and the first rows; the list is longer than the screen, so the column labels and the Refresh footer stay pinned while it scrolls.
 
 ## Elevation & Depth
 

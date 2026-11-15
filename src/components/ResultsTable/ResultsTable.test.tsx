@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { buildSlots, summarise, toEstimate } from '../../domain/departures';
 import type { SlotState } from '../../domain/types';
@@ -20,13 +21,18 @@ function slots(): SlotState[] {
   }));
 }
 
-function renderTable(states: SlotState[], now = new Date(2026, 10, 10, 7, 30), reduced = false) {
+function renderTable(
+  states: SlotState[],
+  now = new Date(2026, 10, 10, 7, 30),
+  reduced = false,
+  onSelect?: (departAt: Date) => void,
+) {
   const ready = states.flatMap((s) => (s.status === 'ready' ? [s.estimate] : []));
   const summary = summarise(ready);
   const rows = buildRows(states, summary.best === undefined ? undefined : summary, now);
   return render(
     <I18nProvider lang="en">
-      <ResultsTable rows={rows} drawKey="now" reducedMotion={reduced} />
+      <ResultsTable rows={rows} drawKey="now" reducedMotion={reduced} onSelect={onSelect} />
     </I18nProvider>,
   );
 }
@@ -38,6 +44,40 @@ describe('ResultsTable', () => {
     expect(within(table).getAllByRole('columnheader')).toHaveLength(5);
     expect(within(table).getAllByRole('row')).toHaveLength(10);
     expect(within(table).getAllByRole('rowheader')).toHaveLength(9);
+  });
+
+  it('restarts the list at a tapped departure, but not at the first row', async () => {
+    const onSelect = vi.fn();
+    renderTable(slots(), undefined, false, onSelect);
+    const rows = screen.getAllByRole('row').slice(1);
+
+    await userEvent.click(rows[3]!);
+    expect(onSelect).toHaveBeenLastCalledWith(new Date(2026, 10, 10, 8, 30));
+
+    await userEvent.click(within(rows[2]!).getByRole('button', { name: /Start the list at/ }));
+    expect(onSelect).toHaveBeenCalledTimes(2);
+    expect(onSelect).toHaveBeenLastCalledWith(new Date(2026, 10, 10, 8, 15));
+
+    expect(within(rows[0]!).queryByRole('button')).not.toBeInTheDocument();
+    await userEvent.click(rows[0]!);
+    expect(onSelect).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not offer departures that already passed', () => {
+    renderTable(slots(), new Date(2026, 10, 10, 8, 20), false, vi.fn());
+    const rows = screen.getAllByRole('row').slice(1);
+    expect(within(rows[1]!).queryByRole('button')).not.toBeInTheDocument();
+    expect(within(rows[4]!).getByRole('button')).toBeInTheDocument();
+  });
+
+  it('scrolls the best row into view on request', async () => {
+    const scrolled: Element[] = [];
+    Element.prototype.scrollIntoView = function scrollIntoView(this: Element) {
+      scrolled.push(this);
+    };
+    renderTable(slots());
+    await userEvent.click(screen.getByRole('button', { name: 'Go to best time' }));
+    expect(scrolled).toEqual([screen.getAllByRole('row')[9]]);
   });
 
   it('explains the bar colours in a legend', () => {

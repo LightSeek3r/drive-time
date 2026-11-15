@@ -15,6 +15,20 @@ describe('sampleEstimates', () => {
     ]);
   });
 
+  it('covers a wider, finer window along the same curve', () => {
+    const estimates = sampleEstimates(base, 10, 19);
+
+    expect(estimates).toHaveLength(19);
+    expect(estimates[18]?.slot.offsetMin).toBe(180);
+    expect(toDisplayMinutes(estimates[0]?.durationSec ?? 0)).toBe(33);
+    // 30 min is a knot of the 15-min curve, so a 10-min grid hits it exactly.
+    expect(toDisplayMinutes(estimates[3]?.durationSec ?? 0)).toBe(42);
+    expect(toDisplayMinutes(estimates[18]?.durationSec ?? 0)).toBe(25);
+    const summary = summarise(estimates);
+    // Rounded to whole minutes the curve is flat at 25 from 165 min on; ties go to the earliest.
+    expect(summary.best?.slot.offsetMin).toBe(170);
+  });
+
   it('is deterministic for the same base', () => {
     expect(sampleEstimates(base)).toEqual(sampleEstimates(new Date(base.getTime())));
   });
