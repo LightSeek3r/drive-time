@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Vite + React 19 + TypeScript, installable PWA (vite-plugin-pwa), static hosting, no backend.
+Vite + React 19 + TypeScript, installable PWA (vite-plugin-pwa), Cloudflare Worker with static assets; the Worker only proxies TomTom so the key stays server-side.
 
 ## Users
 
@@ -24,13 +24,13 @@ Waze/Google Maps hide departure-time comparison inside route screens, one time a
 
 ## Operating Context
 
-Origin comes from the device's location or a typed place. Destination is typed or a saved place. Home and Work are saved on the device (localStorage). Travel times come from TomTom Routing (`departAt`), which blends historic typical speeds for that weekday and time with current traffic. The user supplies their own free TomTom API key in Settings; it is stored on the device only.
+Origin comes from the device's location or a typed place. Destination is typed or a saved place. Home and Work are saved on the device (localStorage). Travel times come from TomTom Routing (`departAt`), which blends historic typical speeds for that weekday and time with current traffic. The TomTom key is a Worker secret and never reaches the browser.
 
 ## Capabilities and Constraints
 
 - Origin: current location (geolocation) or place search with autocomplete. Destination: place search or saved Home/Work. Swap origin and destination.
 - Start time: "now" by default, or a chosen day and time ("leave at…"). Results: base time and the following steps, 10 minutes for 3 hours by default (19 slots); Settings offer 2, 3 or 4 hours and 5, 10, 15 or 30 minutes, capped at 25 slots. Each slot shows departure time, arrival time, duration, and difference from the first slot. The fastest slot is called out.
-- Save and edit Home and Work in localStorage. No accounts, no server, no analytics.
+- Save and edit Home and Work in localStorage. No accounts, no analytics.
 - Free TomTom tier: 20K routing and 20K geocoding requests/month, no card; one routing request per slot per refresh (19 by default), so results are cached for 5 minutes and refresh is manual.
 - Predictions are estimates from typical traffic, not guarantees; the copy must not oversell them.
 - Open decision: maximum future date the routing API accepts for a chosen start time (to be verified live; the picker limits itself to what the API accepts).

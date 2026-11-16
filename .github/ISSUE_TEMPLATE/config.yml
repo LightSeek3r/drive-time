@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/LightSeek3r/drive-time/security/advisories/new
+    about: Please report security problems privately, not as a public issue.
+  - name: Open the app
+    url: https://drive-time.unit42.fr/
+    about: Try Drive Time in your browser.

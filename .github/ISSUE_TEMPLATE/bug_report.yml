@@ -1,0 +1,26 @@
+name: Bug report
+description: Something in Drive Time does not work as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The start and destination types you used (a place name is enough), the start time, and the language.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Safari 18 on iPhone 15, Chrome 130 on Android 15, installed PWA or browser tab
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag an image here if it helps. Please hide anything personal such as your home address.
