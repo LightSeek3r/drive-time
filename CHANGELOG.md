@@ -6,6 +6,11 @@ All notable changes to Drive Time are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The release workflow now extracts the changelog section without a regular expression, and
+  Dependabot leaves major version bumps to deliberate upgrades.
+
 ## [0.7.0] - 2026-11-16
 
 First public release.
