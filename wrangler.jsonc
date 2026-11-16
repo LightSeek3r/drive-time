@@ -15,9 +15,5 @@
       "simple": { "limit": 60, "period": 60 },
     },
   ],
-  "routes": [
-    { "pattern": "drive-time.unit42.fr", "custom_domain": true },
-    // Former host: kept so old links and installed copies keep working.
-    { "pattern": "home-timer.unit42.fr", "custom_domain": true },
-  ],
+  "routes": [{ "pattern": "drive-time.unit42.fr", "custom_domain": true }],
 }
