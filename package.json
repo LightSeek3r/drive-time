@@ -21,10 +21,10 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261113.1",
+    "@cloudflare/workers-types": "^5.20261119.1",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^16.0.0",
-    "@testing-library/user-event": "^14.6.10",
+    "@testing-library/user-event": "^14.6.13",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -35,6 +35,6 @@
     "vite": "^5.0.10",
     "vite-plugin-pwa": "^0.21.2",
     "vitest": "^1.1.0",
-    "wrangler": "^4.161.0"
+    "wrangler": "^4.165.0"
   }
 }
